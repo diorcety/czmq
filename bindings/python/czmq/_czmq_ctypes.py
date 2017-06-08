@@ -8,19 +8,6 @@ import os, sys
 from ctypes import *
 from ctypes.util import find_library
 
-# load libc to access free, etc.
-libcpath = find_library("c")
-if not libcpath:
-    raise ImportError("Unable to find libc")
-libc = cdll.LoadLibrary(libcpath)
-libc.free.argtypes = [c_void_p]
-libc.free.restype = None
-
-def return_fresh_string(char_p):
-    s = string_at(char_p)
-    libc.free(char_p)
-    return s
-
 # czmq
 lib = None
 # check to see if the shared object was embedded locally, attempt to load it
@@ -54,6 +41,11 @@ if not lib:
         if not libpath:
             raise ImportError("Unable to find libczmq")
         lib = cdll.LoadLibrary(libpath)
+
+def return_fresh_string(string_p):
+    s = string_at(string_p)
+    lib.zstr_free(pointer(cast(string_p, c_char_p)))
+    return s
 
 class zsock_t(Structure):
     pass # Empty - only for type checking
@@ -7060,8 +7052,6 @@ lib.zsys_udp_new.restype = socket_p
 lib.zsys_udp_new.argtypes = [c_bool]
 lib.zsys_udp_close.restype = c_int
 lib.zsys_udp_close.argtypes = [socket_p]
-lib.zsys_udp_send.restype = c_int
-lib.zsys_udp_send.argtypes = [socket_p, zframe_p, c_void_p, c_int]
 lib.zsys_udp_recv.restype = zframe_p
 lib.zsys_udp_recv.argtypes = [socket_p, c_char_p, c_int]
 lib.zsys_socket_error.restype = None
@@ -7394,15 +7384,6 @@ and related ones might _eventually_ be moved to a zudp class.
 *** This is for CZMQ internal use only and may change arbitrarily ***
         """
         return lib.zsys_udp_close(handle)
-
-    @staticmethod
-    def udp_send(udpsock, frame, address, addrlen):
-        """
-        Send zframe to UDP socket, return -1 if sending failed due to
-interface having disappeared (happens easily with WiFi)
-*** This is for CZMQ internal use only and may change arbitrarily ***
-        """
-        return lib.zsys_udp_send(udpsock, frame, address, addrlen)
 
     @staticmethod
     def udp_recv(udpsock, peername, peerlen):
