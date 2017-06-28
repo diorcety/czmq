@@ -240,10 +240,6 @@
 
 #if (defined (__MSDOS__))
 #   if (defined (__WINDOWS__))
-#       if (_WIN32_WINNT < 0x0600)
-#           undef _WIN32_WINNT
-#           define _WIN32_WINNT 0x0600
-#       endif
 #       if (!defined (FD_SETSIZE))
 #           define FD_SETSIZE 1024      //  Max. filehandles/sockets
 #       endif
