@@ -132,6 +132,61 @@ typedef CRITICAL_SECTION zsys_mutex_t;
 //  Mutex to guard socket counter
 static zsys_mutex_t s_mutex;
 
+#if defined (__WINDOWS__)
+#if _WIN32_WINNT < 0x0600
+static char *
+if_indextoname (unsigned int ifindex, char *ifname)
+{
+  PIP_ADAPTER_ADDRESSES addresses = NULL, p;
+  ULONG addresses_len = 0;
+  char *name = NULL;
+  DWORD res;
+
+  res = GetAdaptersAddresses (AF_UNSPEC, 0, NULL, NULL, &addresses_len);
+  if (res != NO_ERROR && res != ERROR_BUFFER_OVERFLOW)
+    {
+      if (res == ERROR_NO_DATA)
+        errno = ENXIO;
+      else
+        errno = EINVAL;
+      return 0;
+    }
+
+  addresses = (PIP_ADAPTER_ADDRESSES) malloc (addresses_len);
+  res = GetAdaptersAddresses (AF_UNSPEC, 0, NULL, addresses, &addresses_len);
+
+  if (res != NO_ERROR)
+    {
+      free (addresses);
+      if (res == ERROR_NO_DATA)
+        errno = ENXIO;
+      else
+        errno = EINVAL;
+      return 0;
+    }
+
+  p = addresses;
+  while (p)
+    {
+      if (p->IfIndex == ifindex)
+        {
+          name = p->AdapterName;
+          break;
+        }
+      p = p->Next;
+    }
+
+  if (p == NULL)
+    errno = ENXIO;
+  else
+    name = strncpy(ifname, name, IF_NAMESIZE);
+
+  free (addresses);
+
+  return name;
+}
+#endif
+#endif
 
 //  --------------------------------------------------------------------------
 //  Initialize CZMQ zsys layer; this happens automatically when you create
