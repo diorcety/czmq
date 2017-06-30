@@ -249,6 +249,9 @@
 #       include <process.h>
 #       include <ws2tcpip.h>            //  For getnameinfo ()
 #       include <iphlpapi.h>            //  For GetAdaptersAddresses ()
+#if     _WIN32_WINNT < 0x0600
+#           define IF_NAMESIZE 256
+#endif
 #   endif
 #   include <malloc.h>
 #   include <dos.h>
@@ -674,8 +677,7 @@ typedef int SOCKET;
 //  This would normally come from net/if.h
 unsigned int if_nametoindex (const char *ifname);
 char *if_indextoname (unsigned int ifindex, char *ifname);
-//  32 on Linux, 256 on Windows, pick largest to avoid overflows
-#   define IF_NAMESIZE 256
+#   define IF_NAMESIZE 32
 #else
 #   if defined (HAVE_NET_IF_H)
 #       include <net/if.h>

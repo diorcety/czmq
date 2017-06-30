@@ -27,6 +27,60 @@
 
 #include "czmq_classes.h"
 
+#if defined (__WINDOWS__)
+#if _WIN32_WINNT < 0x0600
+static unsigned int
+if_nametoindex (const char *iface)
+{
+  PIP_ADAPTER_ADDRESSES addresses = NULL, p;
+  ULONG addresses_len = 0;
+  unsigned int idx = 0;
+  DWORD res;
+
+  res = GetAdaptersAddresses (AF_UNSPEC, 0, NULL, NULL, &addresses_len);
+  if (res != NO_ERROR && res != ERROR_BUFFER_OVERFLOW)
+    {
+      if (res == ERROR_NO_DATA)
+        errno = ENXIO;
+      else
+        errno = EINVAL;
+      return 0;
+    }
+
+  addresses = (PIP_ADAPTER_ADDRESSES) malloc (addresses_len);
+  res = GetAdaptersAddresses (AF_UNSPEC, 0, NULL, addresses, &addresses_len);
+
+  if (res != NO_ERROR)
+    {
+      free (addresses);
+      if (res == ERROR_NO_DATA)
+        errno = ENXIO;
+      else
+        errno = EINVAL;
+      return 0;
+    }
+
+  p = addresses;
+  while (p)
+    {
+      if (strcmp (p->AdapterName, iface) == 0)
+        {
+          idx = p->IfIndex;
+          break;
+        }
+      p = p->Next;
+    }
+
+  if (p == NULL)
+    errno = ENXIO;
+
+  free (addresses);
+
+  return idx;
+}
+#endif
+#endif
+
 //  Constants
 #define INTERVAL_DFLT  1000         //  Default interval = 1 second
 
@@ -649,3 +703,4 @@ zbeacon_test (bool verbose)
     //  @end
     printf ("OK\n");
 }
+
