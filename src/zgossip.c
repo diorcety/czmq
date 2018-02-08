@@ -137,6 +137,7 @@ struct _client_t {
     //  and are set by the generated engine; do not modify them!
     server_t *server;           //  Reference to parent server
     zgossip_msg_t *message;     //  Message in and out
+    uint  unique_id;            //  Client identifier (for correlation purpose with the engine)
 };
 
 
