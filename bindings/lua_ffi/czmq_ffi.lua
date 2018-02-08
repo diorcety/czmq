@@ -71,8 +71,8 @@ typedef void (zcertstore_loader) (
     zcertstore_t *self);
 
 // Destructor for loader state.
-typedef void (zcertstore_destructor) (
-    void **self_p);
+typedef void * (zcertstore_destructor) (
+    void *self_p);
 
 //
 typedef int (zconfig_fct) (

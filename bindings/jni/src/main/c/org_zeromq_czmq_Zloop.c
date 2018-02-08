@@ -25,6 +25,13 @@ Java_org_zeromq_czmq_Zloop__1_1destroy (JNIEnv *env, jclass c, jlong self)
     zloop_destroy ((zloop_t **) &self);
 }
 
+JNIEXPORT jint JNICALL
+Java_org_zeromq_czmq_Zloop__1_1reader (JNIEnv *env, jclass c, jlong self, jlong sock, jlong handler, jlong arg)
+{
+    jint reader_ = (jint) zloop_reader ((zloop_t *) (intptr_t) self, (zsock_t *) (intptr_t) sock, (zloop_reader_fn *) (intptr_t) handler, (void *) (intptr_t) arg);
+    return reader_;
+}
+
 JNIEXPORT void JNICALL
 Java_org_zeromq_czmq_Zloop__1_1readerEnd (JNIEnv *env, jclass c, jlong self, jlong sock)
 {
@@ -38,10 +45,24 @@ Java_org_zeromq_czmq_Zloop__1_1readerSetTolerant (JNIEnv *env, jclass c, jlong s
 }
 
 JNIEXPORT jint JNICALL
+Java_org_zeromq_czmq_Zloop__1_1timer (JNIEnv *env, jclass c, jlong self, jlong delay, jlong times, jlong handler, jlong arg)
+{
+    jint timer_ = (jint) zloop_timer ((zloop_t *) (intptr_t) self, (size_t) delay, (size_t) times, (zloop_timer_fn *) (intptr_t) handler, (void *) (intptr_t) arg);
+    return timer_;
+}
+
+JNIEXPORT jint JNICALL
 Java_org_zeromq_czmq_Zloop__1_1timerEnd (JNIEnv *env, jclass c, jlong self, jint timer_id)
 {
     jint timer_end_ = (jint) zloop_timer_end ((zloop_t *) (intptr_t) self, (int) timer_id);
     return timer_end_;
+}
+
+JNIEXPORT jlong JNICALL
+Java_org_zeromq_czmq_Zloop__1_1ticket (JNIEnv *env, jclass c, jlong self, jlong handler, jlong arg)
+{
+    jlong ticket_ = (jlong) (intptr_t) zloop_ticket ((zloop_t *) (intptr_t) self, (zloop_timer_fn *) (intptr_t) handler, (void *) (intptr_t) arg);
+    return ticket_;
 }
 
 JNIEXPORT void JNICALL

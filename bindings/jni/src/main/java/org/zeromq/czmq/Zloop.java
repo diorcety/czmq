@@ -15,7 +15,80 @@ public class Zloop implements AutoCloseable{
             System.exit (-1);
         }
     }
+
+    public interface ZloopReaderFn {
+        int  callback (Zloop loop, Zsock reader, long arg);
+    }
+
+    public static class _ZloopReaderFn implements AutoCloseable, com.kenai.jffi.Closure {
+        private final ZloopReaderFn inner;
+        private final com.kenai.jffi.Closure.Handle handle;
+
+        public _ZloopReaderFn (ZloopReaderFn inner) {
+            this.inner = inner;
+            this.handle = com.kenai.jffi.ClosureManager.getInstance().newClosure(this, com.kenai.jffi.Type.SINT, new com.kenai.jffi.Type[] {com.kenai.jffi.Type.POINTER, com.kenai.jffi.Type.POINTER, com.kenai.jffi.Type.SLONG}, com.kenai.jffi.CallingConvention.DEFAULT);
+            this.handle.setAutoRelease(false);
+        }
+
+        @Override
+        public void close () {
+            handle.dispose();
+        }
+
+        @Override
+        public void invoke(com.kenai.jffi.Closure.Buffer buffer) {
+            int ret;
+            ret =  inner.callback(new Zloop(buffer.getAddress(0)), new Zsock(buffer.getAddress(1)), buffer.getLong(2));
+            buffer.setIntReturn(ret);
+        }
+
+        public long getAddress () {
+            return handle.getAddress();
+        }
+    }
+
+    public static _ZloopReaderFn zloop_reader_fn(ZloopReaderFn inner) {
+        return inner != null ? new _ZloopReaderFn(inner) : null;
+    }
+
+    public interface ZloopTimerFn {
+        int  callback (Zloop loop, int timerId, long arg);
+    }
+
+    public static class _ZloopTimerFn implements AutoCloseable, com.kenai.jffi.Closure {
+        private final ZloopTimerFn inner;
+        private final com.kenai.jffi.Closure.Handle handle;
+
+        public _ZloopTimerFn (ZloopTimerFn inner) {
+            this.inner = inner;
+            this.handle = com.kenai.jffi.ClosureManager.getInstance().newClosure(this, com.kenai.jffi.Type.SINT, new com.kenai.jffi.Type[] {com.kenai.jffi.Type.POINTER, com.kenai.jffi.Type.SINT, com.kenai.jffi.Type.SLONG}, com.kenai.jffi.CallingConvention.DEFAULT);
+            this.handle.setAutoRelease(false);
+        }
+
+        @Override
+        public void close () {
+            handle.dispose();
+        }
+
+        @Override
+        public void invoke(com.kenai.jffi.Closure.Buffer buffer) {
+            int ret;
+            ret =  inner.callback(new Zloop(buffer.getAddress(0)), buffer.getInt(1), buffer.getLong(2));
+            buffer.setIntReturn(ret);
+        }
+
+        public long getAddress () {
+            return handle.getAddress();
+        }
+    }
+
+    public static _ZloopTimerFn zloop_timer_fn(ZloopTimerFn inner) {
+        return inner != null ? new _ZloopTimerFn(inner) : null;
+    }
+
+
     public long self;
+
     /*
     Create a new zloop reactor
     */
@@ -36,6 +109,17 @@ public class Zloop implements AutoCloseable{
         __destroy (self);
         self = 0;
     }
+
+    /*
+    Register socket reader with the reactor. When the reader has messages,
+    the reactor will call the handler, passing the arg. Returns 0 if OK, -1
+    if there was an error. If you register the same socket more than once,
+    each instance will invoke its corresponding handler.
+    */
+    native static int __reader (long self, long sock, long handler, long arg);
+    public int reader (Zsock sock, _ZloopReaderFn handler, long arg) {
+        return __reader (self, sock.self, handler.getAddress(), arg);
+    }
     /*
     Cancel a socket reader from the reactor. If multiple readers exist for
     same socket, cancels ALL of them.
@@ -53,12 +137,37 @@ public class Zloop implements AutoCloseable{
         __readerSetTolerant (self, sock.self);
     }
     /*
+    Register a timer that expires after some delay and repeats some number of
+    times. At each expiry, will call the handler, passing the arg. To run a
+    timer forever, use 0 times. Returns a timer_id that is used to cancel the
+    timer in the future. Returns -1 if there was an error.
+    */
+    native static int __timer (long self, long delay, long times, long handler, long arg);
+    public int timer (long delay, long times, _ZloopTimerFn handler, long arg) {
+        return __timer (self, delay, times, handler.getAddress(), arg);
+    }
+    /*
     Cancel a specific timer identified by a specific timer_id (as returned by
     zloop_timer).
     */
     native static int __timerEnd (long self, int timerId);
     public int timerEnd (int timerId) {
         return __timerEnd (self, timerId);
+    }
+    /*
+    Register a ticket timer. Ticket timers are very fast in the case where
+    you use a lot of timers (thousands), and frequently remove and add them.
+    The main use case is expiry timers for servers that handle many clients,
+    and which reset the expiry timer for each message received from a client.
+    Whereas normal timers perform poorly as the number of clients grows, the
+    cost of ticket timers is constant, no matter the number of clients. You
+    must set the ticket delay using zloop_set_ticket_delay before creating a
+    ticket. Returns a handle to the timer that you should use in
+    zloop_ticket_reset and zloop_ticket_delete.
+    */
+    native static long __ticket (long self, long handler, long arg);
+    public long ticket (_ZloopTimerFn handler, long arg) {
+        return __ticket (self, handler.getAddress(), arg);
     }
     /*
     Reset a ticket timer, which moves it to the end of the ticket list and

@@ -15,7 +15,10 @@ public class Zdigest implements AutoCloseable{
             System.exit (-1);
         }
     }
+
+
     public long self;
+
     /*
     Constructor - creates new digest object, which you use to build up a
     digest by repeatedly calling zdigest_update() on chunks of data.
@@ -37,6 +40,7 @@ public class Zdigest implements AutoCloseable{
         __destroy (self);
         self = 0;
     }
+
     /*
     Add buffer into digest calculation
     */

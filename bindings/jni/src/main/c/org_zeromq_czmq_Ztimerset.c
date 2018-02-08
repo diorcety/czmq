@@ -26,6 +26,13 @@ Java_org_zeromq_czmq_Ztimerset__1_1destroy (JNIEnv *env, jclass c, jlong self)
 }
 
 JNIEXPORT jint JNICALL
+Java_org_zeromq_czmq_Ztimerset__1_1add (JNIEnv *env, jclass c, jlong self, jlong interval, jlong handler, jlong arg)
+{
+    jint add_ = (jint) ztimerset_add ((ztimerset_t *) (intptr_t) self, (size_t) interval, (ztimerset_fn *) (intptr_t) handler, (void *) (intptr_t) arg);
+    return add_;
+}
+
+JNIEXPORT jint JNICALL
 Java_org_zeromq_czmq_Ztimerset__1_1cancel (JNIEnv *env, jclass c, jlong self, jint timer_id)
 {
     jint cancel_ = (jint) ztimerset_cancel ((ztimerset_t *) (intptr_t) self, (int) timer_id);

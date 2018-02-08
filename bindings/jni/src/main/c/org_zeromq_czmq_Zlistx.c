@@ -182,6 +182,24 @@ Java_org_zeromq_czmq_Zlistx__1_1dup (JNIEnv *env, jclass c, jlong self)
 }
 
 JNIEXPORT void JNICALL
+Java_org_zeromq_czmq_Zlistx__1_1setDestructor (JNIEnv *env, jclass c, jlong self, jlong destructor)
+{
+    zlistx_set_destructor ((zlistx_t *) (intptr_t) self, (zlistx_destructor_fn *) (intptr_t) destructor);
+}
+
+JNIEXPORT void JNICALL
+Java_org_zeromq_czmq_Zlistx__1_1setDuplicator (JNIEnv *env, jclass c, jlong self, jlong duplicator)
+{
+    zlistx_set_duplicator ((zlistx_t *) (intptr_t) self, (zlistx_duplicator_fn *) (intptr_t) duplicator);
+}
+
+JNIEXPORT void JNICALL
+Java_org_zeromq_czmq_Zlistx__1_1setComparator (JNIEnv *env, jclass c, jlong self, jlong comparator)
+{
+    zlistx_set_comparator ((zlistx_t *) (intptr_t) self, (zlistx_comparator_fn *) (intptr_t) comparator);
+}
+
+JNIEXPORT void JNICALL
 Java_org_zeromq_czmq_Zlistx__1_1test (JNIEnv *env, jclass c, jboolean verbose)
 {
     zlistx_test ((bool) verbose);

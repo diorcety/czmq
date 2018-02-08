@@ -15,7 +15,43 @@ public class Zhash implements AutoCloseable{
             System.exit (-1);
         }
     }
+
+    public interface ZhashFreeFn {
+        void  callback (long data);
+    }
+
+    public static class _ZhashFreeFn implements AutoCloseable, com.kenai.jffi.Closure {
+        private final ZhashFreeFn inner;
+        private final com.kenai.jffi.Closure.Handle handle;
+
+        public _ZhashFreeFn (ZhashFreeFn inner) {
+            this.inner = inner;
+            this.handle = com.kenai.jffi.ClosureManager.getInstance().newClosure(this, com.kenai.jffi.Type.VOID, new com.kenai.jffi.Type[] {com.kenai.jffi.Type.SLONG}, com.kenai.jffi.CallingConvention.DEFAULT);
+            this.handle.setAutoRelease(false);
+        }
+
+        @Override
+        public void close () {
+            handle.dispose();
+        }
+
+        @Override
+        public void invoke(com.kenai.jffi.Closure.Buffer buffer) {
+            inner.callback(buffer.getLong(0));
+        }
+
+        public long getAddress () {
+            return handle.getAddress();
+        }
+    }
+
+    public static _ZhashFreeFn zhash_free_fn(ZhashFreeFn inner) {
+        return inner != null ? new _ZhashFreeFn(inner) : null;
+    }
+
+
     public long self;
+
     /*
     Create a new, empty hash container
     */
@@ -45,6 +81,7 @@ public class Zhash implements AutoCloseable{
         __destroy (self);
         self = 0;
     }
+
     /*
     Insert item into hash table with specified key and item.
     If key is already present returns -1 and leaves existing item unchanged
@@ -85,6 +122,17 @@ public class Zhash implements AutoCloseable{
     native static int __rename (long self, String oldKey, String newKey);
     public int rename (String oldKey, String newKey) {
         return __rename (self, oldKey, newKey);
+    }
+    /*
+    Set a free function for the specified hash table item. When the item is
+    destroyed, the free function, if any, is called on that item.
+    Use this when hash items are dynamically allocated, to ensure that
+    you don't have memory leaks. You can pass 'free' or NULL as a free_fn.
+    Returns the item, or NULL if there is no such item.
+    */
+    native static long __freefn (long self, String key, long freeFn);
+    public long freefn (String key, _ZhashFreeFn freeFn) {
+        return __freefn (self, key, freeFn.getAddress());
     }
     /*
     Return the number of keys/items in the hash table

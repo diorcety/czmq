@@ -57,6 +57,12 @@ Java_org_zeromq_czmq_Zsys__1_1createPipe (JNIEnv *env, jclass c, jlong backend_p
 }
 
 JNIEXPORT void JNICALL
+Java_org_zeromq_czmq_Zsys__1_1handlerSet (JNIEnv *env, jclass c, jlong handler_fn)
+{
+    zsys_handler_set ((zsys_handler_fn *) (intptr_t) &handler_fn);
+}
+
+JNIEXPORT void JNICALL
 Java_org_zeromq_czmq_Zsys__1_1handlerReset (JNIEnv *env, jclass c)
 {
     zsys_handler_reset ();

@@ -139,6 +139,13 @@ Java_org_zeromq_czmq_Zconfig__1_1atDepth (JNIEnv *env, jclass c, jlong self, jin
     return at_depth_;
 }
 
+JNIEXPORT jint JNICALL
+Java_org_zeromq_czmq_Zconfig__1_1execute (JNIEnv *env, jclass c, jlong self, jlong handler, jlong arg)
+{
+    jint execute_ = (jint) zconfig_execute ((zconfig_t *) (intptr_t) self, (zconfig_fct *) (intptr_t) handler, (void *) (intptr_t) arg);
+    return execute_;
+}
+
 JNIEXPORT void JNICALL
 Java_org_zeromq_czmq_Zconfig__1_1setComment (JNIEnv *env, jclass c, jlong self, jstring format)
 {

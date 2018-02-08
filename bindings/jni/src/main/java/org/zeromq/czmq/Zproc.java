@@ -15,7 +15,10 @@ public class Zproc implements AutoCloseable{
             System.exit (-1);
         }
     }
+
+
     public long self;
+
     /*
     Create a new zproc.
     NOTE: On Windows and with libzmq3 and libzmq2 this function
@@ -38,6 +41,7 @@ public class Zproc implements AutoCloseable{
         __destroy (self);
         self = 0;
     }
+
     /*
     Setup the command line arguments, the first item must be an (absolute) filename
     to run.
@@ -173,7 +177,7 @@ public class Zproc implements AutoCloseable{
     version (x 10000), the minor version (x 100) and the patch.
     */
     native static int __czmqVersion ();
-    public int czmqVersion () {
+    public static int czmqVersion () {
         return __czmqVersion ();
     }
     /*
@@ -182,14 +186,14 @@ public class Zproc implements AutoCloseable{
     processing messages.
     */
     native static boolean __interrupted ();
-    public boolean interrupted () {
+    public static boolean interrupted () {
         return __interrupted ();
     }
     /*
     Returns true if the underlying libzmq supports CURVE security.
     */
     native static boolean __hasCurve ();
-    public boolean hasCurve () {
+    public static boolean hasCurve () {
         return __hasCurve ();
     }
     /*
@@ -197,7 +201,7 @@ public class Zproc implements AutoCloseable{
     If the host name is not resolvable, returns NULL.
     */
     native static String __hostname ();
-    public String hostname () {
+    public static String hostname () {
         return __hostname ();
     }
     /*
@@ -209,7 +213,7 @@ public class Zproc implements AutoCloseable{
     was an error.
     */
     native static void __daemonize (String workdir);
-    public void daemonize (String workdir) {
+    public static void daemonize (String workdir) {
         __daemonize (workdir);
     }
     /*
@@ -221,7 +225,7 @@ public class Zproc implements AutoCloseable{
     process ID.
     */
     native static void __runAs (String lockfile, String group, String user);
-    public void runAs (String lockfile, String group, String user) {
+    public static void runAs (String lockfile, String group, String user) {
         __runAs (lockfile, group, user);
     }
     /*
@@ -232,7 +236,7 @@ public class Zproc implements AutoCloseable{
     Note that this method is valid only before any socket is created.
     */
     native static void __setIoThreads (long ioThreads);
-    public void setIoThreads (long ioThreads) {
+    public static void setIoThreads (long ioThreads) {
         __setIoThreads (ioThreads);
     }
     /*
@@ -242,7 +246,7 @@ public class Zproc implements AutoCloseable{
     Note that this method is valid only before any socket is created.
     */
     native static void __setMaxSockets (long maxSockets);
-    public void setMaxSockets (long maxSockets) {
+    public static void setMaxSockets (long maxSockets) {
         __setMaxSockets (maxSockets);
     }
     /*
@@ -254,14 +258,14 @@ public class Zproc implements AutoCloseable{
     Setting the interface to "*" means "use all available interfaces".
     */
     native static void __setBiface (String value);
-    public void setBiface (String value) {
+    public static void setBiface (String value) {
         __setBiface (value);
     }
     /*
     Return network interface to use for broadcasts, or "" if none was set.
     */
     native static String __biface ();
-    public String biface () {
+    public static String biface () {
         return __biface ();
     }
     /*
@@ -270,7 +274,7 @@ public class Zproc implements AutoCloseable{
     ZSYS_LOGIDENT, if that is set.
     */
     native static void __setLogIdent (String value);
-    public void setLogIdent (String value) {
+    public static void setLogIdent (String value) {
         __setLogIdent (value);
     }
     /*
@@ -283,7 +287,7 @@ public class Zproc implements AutoCloseable{
     this method with a null argument.
     */
     native static void __setLogSender (String endpoint);
-    public void setLogSender (String endpoint) {
+    public static void setLogSender (String endpoint) {
         __setLogSender (endpoint);
     }
     /*
@@ -291,42 +295,42 @@ public class Zproc implements AutoCloseable{
     event log on Windows). By default this is disabled.
     */
     native static void __setLogSystem (boolean logsystem);
-    public void setLogSystem (boolean logsystem) {
+    public static void setLogSystem (boolean logsystem) {
         __setLogSystem (logsystem);
     }
     /*
     Log error condition - highest priority
     */
     native static void __logError (String format);
-    public void logError (String format) {
+    public static void logError (String format) {
         __logError (format);
     }
     /*
     Log warning condition - high priority
     */
     native static void __logWarning (String format);
-    public void logWarning (String format) {
+    public static void logWarning (String format) {
         __logWarning (format);
     }
     /*
     Log normal, but significant, condition - normal priority
     */
     native static void __logNotice (String format);
-    public void logNotice (String format) {
+    public static void logNotice (String format) {
         __logNotice (format);
     }
     /*
     Log informational message - low priority
     */
     native static void __logInfo (String format);
-    public void logInfo (String format) {
+    public static void logInfo (String format) {
         __logInfo (format);
     }
     /*
     Log debug-level message - lowest priority
     */
     native static void __logDebug (String format);
-    public void logDebug (String format) {
+    public static void logDebug (String format) {
         __logDebug (format);
     }
     /*

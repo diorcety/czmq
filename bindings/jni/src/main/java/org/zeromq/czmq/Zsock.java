@@ -15,7 +15,10 @@ public class Zsock implements AutoCloseable{
             System.exit (-1);
         }
     }
+
+
     public long self;
+
     /*
     Create a new socket. Returns the new socket, or NULL if the new socket
     could not be created. Note that the symbol zsock_new (and other
@@ -169,6 +172,7 @@ public class Zsock implements AutoCloseable{
         __destroy (self);
         self = 0;
     }
+
     /*
     Bind a socket to a formatted endpoint. For tcp:// endpoints, supports
     ephemeral ports, if you specify the port number as "*". By default
@@ -437,7 +441,7 @@ public class Zsock implements AutoCloseable{
     Takes a polymorphic socket reference.
     */
     native static boolean __is (long self);
-    public boolean is (long self) {
+    public static boolean is (long self) {
         return __is (self);
     }
     /*
@@ -447,7 +451,7 @@ public class Zsock implements AutoCloseable{
     return the supplied value. Takes a polymorphic socket reference.
     */
     native static long __resolve (long self);
-    public long resolve (long self) {
+    public static long resolve (long self) {
         return __resolve (self);
     }
     /*

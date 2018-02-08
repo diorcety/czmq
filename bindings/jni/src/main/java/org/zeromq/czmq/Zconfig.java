@@ -15,7 +15,45 @@ public class Zconfig implements AutoCloseable{
             System.exit (-1);
         }
     }
+
+    public interface ZconfigFct {
+        int  callback (Zconfig self, long arg, int level);
+    }
+
+    public static class _ZconfigFct implements AutoCloseable, com.kenai.jffi.Closure {
+        private final ZconfigFct inner;
+        private final com.kenai.jffi.Closure.Handle handle;
+
+        public _ZconfigFct (ZconfigFct inner) {
+            this.inner = inner;
+            this.handle = com.kenai.jffi.ClosureManager.getInstance().newClosure(this, com.kenai.jffi.Type.SINT, new com.kenai.jffi.Type[] {com.kenai.jffi.Type.POINTER, com.kenai.jffi.Type.SLONG, com.kenai.jffi.Type.SINT}, com.kenai.jffi.CallingConvention.DEFAULT);
+            this.handle.setAutoRelease(false);
+        }
+
+        @Override
+        public void close () {
+            handle.dispose();
+        }
+
+        @Override
+        public void invoke(com.kenai.jffi.Closure.Buffer buffer) {
+            int ret;
+            ret =  inner.callback(new Zconfig(buffer.getAddress(0)), buffer.getLong(1), buffer.getInt(2));
+            buffer.setIntReturn(ret);
+        }
+
+        public long getAddress () {
+            return handle.getAddress();
+        }
+    }
+
+    public static _ZconfigFct zconfig_fct(ZconfigFct inner) {
+        return inner != null ? new _ZconfigFct(inner) : null;
+    }
+
+
     public long self;
+
     /*
     Create new config item
     */
@@ -53,6 +91,7 @@ public class Zconfig implements AutoCloseable{
         __destroy (self);
         self = 0;
     }
+
     /*
     Return name of config item
     */
@@ -136,6 +175,14 @@ public class Zconfig implements AutoCloseable{
         return new Zconfig (__atDepth (self, level));
     }
     /*
+    Execute a callback for each config item in the tree; returns zero if
+    successful, else -1.
+    */
+    native static int __execute (long self, long handler, long arg);
+    public int execute (_ZconfigFct handler, long arg) {
+        return __execute (self, handler.getAddress(), arg);
+    }
+    /*
     Add comment to config item before saving to disk. You can add as many
     comment lines as you like. If you use a null format, all comments are
     deleted.
@@ -188,7 +235,7 @@ public class Zconfig implements AutoCloseable{
     Load a config tree from a memory chunk
     */
     native static long __chunkLoad (long chunk);
-    public Zconfig chunkLoad (Zchunk chunk) {
+    public static Zconfig chunkLoad (Zchunk chunk) {
         return new Zconfig (__chunkLoad (chunk.self));
     }
     /*
@@ -202,7 +249,7 @@ public class Zconfig implements AutoCloseable{
     Load a config tree from a null-terminated string
     */
     native static long __strLoad (String string);
-    public Zconfig strLoad (String string) {
+    public static Zconfig strLoad (String string) {
         return new Zconfig (__strLoad (string));
     }
     /*
@@ -232,8 +279,7 @@ public class Zconfig implements AutoCloseable{
     */
     native static long __remove (long self);
     public void remove () {
-        self = __remove (self);
-        return 0;
+        __remove (self);
     }
     /*
     Print properties of object

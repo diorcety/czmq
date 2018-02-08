@@ -33,7 +33,7 @@ class Zcertstore(object):
         """
         Override the default disk loader with a custom loader fn.
         """
-        utils.lib.zcertstore_set_loader(self._p, loader, destructor, state)
+        utils.lib.zcertstore_set_loader(self._p, loader, destructor, state._p)
 
     def lookup(self, public_key):
         """

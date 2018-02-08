@@ -15,7 +15,43 @@ public class Ztimerset implements AutoCloseable{
             System.exit (-1);
         }
     }
+
+    public interface ZtimersetFn {
+        void  callback (int timerId, long arg);
+    }
+
+    public static class _ZtimersetFn implements AutoCloseable, com.kenai.jffi.Closure {
+        private final ZtimersetFn inner;
+        private final com.kenai.jffi.Closure.Handle handle;
+
+        public _ZtimersetFn (ZtimersetFn inner) {
+            this.inner = inner;
+            this.handle = com.kenai.jffi.ClosureManager.getInstance().newClosure(this, com.kenai.jffi.Type.VOID, new com.kenai.jffi.Type[] {com.kenai.jffi.Type.SINT, com.kenai.jffi.Type.SLONG}, com.kenai.jffi.CallingConvention.DEFAULT);
+            this.handle.setAutoRelease(false);
+        }
+
+        @Override
+        public void close () {
+            handle.dispose();
+        }
+
+        @Override
+        public void invoke(com.kenai.jffi.Closure.Buffer buffer) {
+            inner.callback(buffer.getInt(0), buffer.getLong(1));
+        }
+
+        public long getAddress () {
+            return handle.getAddress();
+        }
+    }
+
+    public static _ZtimersetFn ztimerset_fn(ZtimersetFn inner) {
+        return inner != null ? new _ZtimersetFn(inner) : null;
+    }
+
+
     public long self;
+
     /*
     Create new timer set.
     */
@@ -35,6 +71,14 @@ public class Ztimerset implements AutoCloseable{
     public void close () {
         __destroy (self);
         self = 0;
+    }
+
+    /*
+    Add a timer to the set. Returns timer id if OK, -1 on failure.
+    */
+    native static int __add (long self, long interval, long handler, long arg);
+    public int add (long interval, _ZtimersetFn handler, long arg) {
+        return __add (self, interval, handler.getAddress(), arg);
     }
     /*
     Cancel a timer. Returns 0 if OK, -1 on failure.

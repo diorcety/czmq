@@ -15,7 +15,43 @@ public class Ztrie implements AutoCloseable{
             System.exit (-1);
         }
     }
+
+    public interface ZtrieDestroyDataFn {
+        void  callback (long data);
+    }
+
+    public static class _ZtrieDestroyDataFn implements AutoCloseable, com.kenai.jffi.Closure {
+        private final ZtrieDestroyDataFn inner;
+        private final com.kenai.jffi.Closure.Handle handle;
+
+        public _ZtrieDestroyDataFn (ZtrieDestroyDataFn inner) {
+            this.inner = inner;
+            this.handle = com.kenai.jffi.ClosureManager.getInstance().newClosure(this, com.kenai.jffi.Type.VOID, new com.kenai.jffi.Type[] {com.kenai.jffi.Type.SLONG}, com.kenai.jffi.CallingConvention.DEFAULT);
+            this.handle.setAutoRelease(false);
+        }
+
+        @Override
+        public void close () {
+            handle.dispose();
+        }
+
+        @Override
+        public void invoke(com.kenai.jffi.Closure.Buffer buffer) {
+            inner.callback(buffer.getLong(0));
+        }
+
+        public long getAddress () {
+            return handle.getAddress();
+        }
+    }
+
+    public static _ZtrieDestroyDataFn ztrie_destroy_data_fn(ZtrieDestroyDataFn inner) {
+        return inner != null ? new _ZtrieDestroyDataFn(inner) : null;
+    }
+
+
     public long self;
+
     /*
     Creates a new ztrie.
     */
@@ -35,6 +71,16 @@ public class Ztrie implements AutoCloseable{
     public void close () {
         __destroy (self);
         self = 0;
+    }
+
+    /*
+    Inserts a new route into the tree and attaches the data. Returns -1
+    if the route already exists, otherwise 0. This method takes ownership of
+    the provided data if a destroy_data_fn is provided.
+    */
+    native static int __insertRoute (long self, String path, long data, long destroyDataFn);
+    public int insertRoute (String path, long data, _ZtrieDestroyDataFn destroyDataFn) {
+        return __insertRoute (self, path, data, destroyDataFn.getAddress());
     }
     /*
     Removes a route from the trie and destroys its data. Returns -1 if the

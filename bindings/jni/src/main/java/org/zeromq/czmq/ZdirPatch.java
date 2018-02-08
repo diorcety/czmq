@@ -15,7 +15,10 @@ public class ZdirPatch implements AutoCloseable{
             System.exit (-1);
         }
     }
+
+
     public long self;
+
     /*
     Create new patch
     */
@@ -36,6 +39,7 @@ public class ZdirPatch implements AutoCloseable{
         __destroy (self);
         self = 0;
     }
+
     /*
     Create copy of a patch. If the patch is null, or memory was exhausted,
     returns null.

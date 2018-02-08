@@ -15,7 +15,10 @@ public class Zdir implements AutoCloseable{
             System.exit (-1);
         }
     }
+
+
     public long self;
+
     /*
     Create a new directory item that loads in the full tree of the specified
     path, optionally located under some parent path. If parent is "-", then
@@ -38,6 +41,7 @@ public class Zdir implements AutoCloseable{
         __destroy (self);
         self = 0;
     }
+
     /*
     Return directory path
     */
@@ -92,7 +96,7 @@ public class Zdir implements AutoCloseable{
     generates virtual filename (minus path, plus alias).
     */
     native static long __diff (long older, long newer, String alias);
-    public Zlist diff (Zdir older, Zdir newer, String alias) {
+    public static Zlist diff (Zdir older, Zdir newer, String alias) {
         return new Zlist (__diff (older.self, newer.self, alias));
     }
     /*
@@ -146,7 +150,7 @@ public class Zdir implements AutoCloseable{
         zlist_destroy (&patches);
     */
     native static void __watch (long pipe, long unused);
-    public void watch (Zsock pipe, long unused) {
+    public static void watch (Zsock pipe, long unused) {
         __watch (pipe.self, unused);
     }
     /*

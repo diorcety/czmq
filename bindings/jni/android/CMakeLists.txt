@@ -40,6 +40,7 @@ ELSE (CZMQ_FOUND)
 ENDIF (CZMQ_FOUND)
 
 set (czmqjni_sources
+    ../src/main/c/org_zeromq_czmq_Zactor.c
     ../src/main/c/org_zeromq_czmq_Zarmour.c
     ../src/main/c/org_zeromq_czmq_Zcert.c
     ../src/main/c/org_zeromq_czmq_Zcertstore.c

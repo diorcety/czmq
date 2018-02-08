@@ -15,7 +15,10 @@ public class Zuuid implements AutoCloseable{
             System.exit (-1);
         }
     }
+
+
     public long self;
+
     /*
     Create a new UUID object.
     */
@@ -43,6 +46,7 @@ public class Zuuid implements AutoCloseable{
         __destroy (self);
         self = 0;
     }
+
     /*
     Set UUID to new supplied ZUUID_LEN-octet value.
     */

@@ -15,7 +15,10 @@ public class Ziflist implements AutoCloseable{
             System.exit (-1);
         }
     }
+
+
     public long self;
+
     /*
     Get a list of network interfaces currently defined on the system
     */
@@ -36,6 +39,7 @@ public class Ziflist implements AutoCloseable{
         __destroy (self);
         self = 0;
     }
+
     /*
     Reload network interfaces from system
     */
@@ -97,7 +101,7 @@ public class Ziflist implements AutoCloseable{
     Includes IPv6 interfaces
     */
     native static long __newIpv6 ();
-    public Ziflist newIpv6 () {
+    public static Ziflist newIpv6 () {
         return new Ziflist (__newIpv6 ());
     }
     /*

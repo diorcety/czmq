@@ -15,7 +15,113 @@ public class Zlistx implements AutoCloseable{
             System.exit (-1);
         }
     }
+
+    public interface ZlistxDestructorFn {
+        void  callback (long item);
+    }
+
+    public static class _ZlistxDestructorFn implements AutoCloseable, com.kenai.jffi.Closure {
+        private final ZlistxDestructorFn inner;
+        private final com.kenai.jffi.Closure.Handle handle;
+
+        public _ZlistxDestructorFn (ZlistxDestructorFn inner) {
+            this.inner = inner;
+            this.handle = com.kenai.jffi.ClosureManager.getInstance().newClosure(this, com.kenai.jffi.Type.VOID, new com.kenai.jffi.Type[] {com.kenai.jffi.Type.SLONG}, com.kenai.jffi.CallingConvention.DEFAULT);
+            this.handle.setAutoRelease(false);
+        }
+
+        @Override
+        public void close () {
+            handle.dispose();
+        }
+
+        @Override
+        public void invoke(com.kenai.jffi.Closure.Buffer buffer) {
+            inner.callback(buffer.getLong(0));
+        }
+
+        public long getAddress () {
+            return handle.getAddress();
+        }
+    }
+
+    public static _ZlistxDestructorFn zlistx_destructor_fn(ZlistxDestructorFn inner) {
+        return inner != null ? new _ZlistxDestructorFn(inner) : null;
+    }
+
+    public interface ZlistxDuplicatorFn {
+        long  callback (long item);
+    }
+
+    public static class _ZlistxDuplicatorFn implements AutoCloseable, com.kenai.jffi.Closure {
+        private final ZlistxDuplicatorFn inner;
+        private final com.kenai.jffi.Closure.Handle handle;
+
+        public _ZlistxDuplicatorFn (ZlistxDuplicatorFn inner) {
+            this.inner = inner;
+            this.handle = com.kenai.jffi.ClosureManager.getInstance().newClosure(this, com.kenai.jffi.Type.SLONG, new com.kenai.jffi.Type[] {com.kenai.jffi.Type.SLONG}, com.kenai.jffi.CallingConvention.DEFAULT);
+            this.handle.setAutoRelease(false);
+        }
+
+        @Override
+        public void close () {
+            handle.dispose();
+        }
+
+        @Override
+        public void invoke(com.kenai.jffi.Closure.Buffer buffer) {
+            long ret;
+            ret =  inner.callback(buffer.getLong(0));
+            buffer.setLongReturn(ret);
+        }
+
+        public long getAddress () {
+            return handle.getAddress();
+        }
+    }
+
+    public static _ZlistxDuplicatorFn zlistx_duplicator_fn(ZlistxDuplicatorFn inner) {
+        return inner != null ? new _ZlistxDuplicatorFn(inner) : null;
+    }
+
+    public interface ZlistxComparatorFn {
+        int  callback (long item1, long item2);
+    }
+
+    public static class _ZlistxComparatorFn implements AutoCloseable, com.kenai.jffi.Closure {
+        private final ZlistxComparatorFn inner;
+        private final com.kenai.jffi.Closure.Handle handle;
+
+        public _ZlistxComparatorFn (ZlistxComparatorFn inner) {
+            this.inner = inner;
+            this.handle = com.kenai.jffi.ClosureManager.getInstance().newClosure(this, com.kenai.jffi.Type.SINT, new com.kenai.jffi.Type[] {com.kenai.jffi.Type.SLONG, com.kenai.jffi.Type.SLONG}, com.kenai.jffi.CallingConvention.DEFAULT);
+            this.handle.setAutoRelease(false);
+        }
+
+        @Override
+        public void close () {
+            handle.dispose();
+        }
+
+        @Override
+        public void invoke(com.kenai.jffi.Closure.Buffer buffer) {
+            int ret;
+            ret =  inner.callback(buffer.getLong(0), buffer.getLong(1));
+            buffer.setIntReturn(ret);
+        }
+
+        public long getAddress () {
+            return handle.getAddress();
+        }
+    }
+
+    public static _ZlistxComparatorFn zlistx_comparator_fn(ZlistxComparatorFn inner) {
+        return inner != null ? new _ZlistxComparatorFn(inner) : null;
+    }
+
+
     public long self;
+
     /*
     Create a new, empty list.
     */
@@ -37,6 +143,7 @@ public class Zlistx implements AutoCloseable{
         __destroy (self);
         self = 0;
     }
+
     /*
     Add an item to the head of the list. Calls the item duplicator, if any,
     on the item. Resets cursor to list head. Returns an item handle on
@@ -131,7 +238,7 @@ public class Zlistx implements AutoCloseable{
     in handle is NULL. Asserts that the passed in handle points to a list element.
     */
     native static long __handleItem (long handle);
-    public long handleItem (long handle) {
+    public static long handleItem (long handle) {
         return __handleItem (handle);
     }
     /*
@@ -236,6 +343,31 @@ public class Zlistx implements AutoCloseable{
     native static long __dup (long self);
     public Zlistx dup () {
         return new Zlistx (__dup (self));
+    }
+    /*
+    Set a user-defined deallocator for list items; by default items are not
+    freed when the list is destroyed.
+    */
+    native static void __setDestructor (long self, long destructor);
+    public void setDestructor (_ZlistxDestructorFn destructor) {
+        __setDestructor (self, destructor.getAddress());
+    }
+    /*
+    Set a user-defined duplicator for list items; by default items are not
+    copied when the list is duplicated.
+    */
+    native static void __setDuplicator (long self, long duplicator);
+    public void setDuplicator (_ZlistxDuplicatorFn duplicator) {
+        __setDuplicator (self, duplicator.getAddress());
+    }
+    /*
+    Set a user-defined comparator for zlistx_find and zlistx_sort; the method
+    must return -1, 0, or 1 depending on whether item1 is less than, equal to,
+    or greater than, item2.
+    */
+    native static void __setComparator (long self, long comparator);
+    public void setComparator (_ZlistxComparatorFn comparator) {
+        __setComparator (self, comparator.getAddress());
     }
     /*
     Self test of this class.
