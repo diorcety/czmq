@@ -111,16 +111,15 @@ s_disk_loader (zcertstore_t *certstore)
 //  --------------------------------------------------------------------------
 //  Disk loader destructor
 
-static void
-s_disk_loader_state_destroy (void **self_p)
+static void *
+s_disk_loader_state_destroy (void *self_p)
 {
-    assert (self_p);
-    if (*self_p) {
-        disk_loader_state *self = (disk_loader_state *)*self_p;
+    if (self_p) {
+        disk_loader_state *self = (disk_loader_state *)self_p;
         freen (self->location);
         freen (self);
-        *self_p = NULL;
     }
+    return NULL;
 }
 
 
@@ -174,7 +173,7 @@ zcertstore_destroy (zcertstore_t **self_p)
         zhashx_destroy (&self->certs);
 
         if (self->destructor)
-            self->destructor (&self->state);
+           self->state = self->destructor (self->state);
 
         freen (self);
         *self_p = NULL;
@@ -189,7 +188,7 @@ void
 zcertstore_set_loader (zcertstore_t *self, zcertstore_loader loader, zcertstore_destructor destructor, void *state)
 {
     if (self->destructor && self->state)
-        self->destructor (&self->state);
+        self->state = self->destructor (self->state);
     self->loader = loader;
     self->destructor = destructor;
     self->state = state;
@@ -297,15 +296,14 @@ s_test_loader (zcertstore_t *certstore)
     state->index++;
 }
 
-static void
-s_test_destructor (void **self_p)
+static void *
+s_test_destructor (void *self_p)
 {
-    assert (self_p);
-    if (*self_p) {
-        test_loader_state *self = (test_loader_state *)*self_p;
+    if (self_p) {
+        test_loader_state *self = (test_loader_state *)self_p;
         freen (self);
-        *self_p = NULL;
     }
+    return NULL;
 }
 
 void

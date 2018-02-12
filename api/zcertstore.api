@@ -32,14 +32,15 @@
 
     <callback_type name = "destructor" state = "draft">
         Destructor for loader state.
-        <argument name = "self_p" type = "buffer" c_type = "void **" />
+        <argument name = "self_p" type = "anything" />
+        <return type = "anything" />
     </callback_type>
 
     <method name = "set_loader" state = "draft">
       Override the default disk loader with a custom loader fn.
       <argument name = "loader" type = "zcertstore_loader" callback = "1" />
       <argument name = "destructor" type = "zcertstore_destructor" callback = "1" />
-      <argument name = "state" type = "buffer" c_type = "void *" />
+      <argument name = "state" type = "anything" />
     </method>
 
     <method name = "lookup">

@@ -64,8 +64,8 @@ typedef void (zcertstore_loader) (
     zcertstore_t *self);
 
 // Destructor for loader state.
-typedef void (zcertstore_destructor) (
-    void **self_p);
+typedef void * (zcertstore_destructor) (
+    void *self_p);
 
 //  *** Draft method, for development use, may change without warning ***
 //  Override the default disk loader with a custom loader fn.
