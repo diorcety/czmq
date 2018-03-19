@@ -7,15 +7,9 @@
 package org.zeromq.czmq;
 
 public class Zuuid implements AutoCloseable{
-    static {
-        try {
-            System.loadLibrary ("czmqjni");
-        }
-        catch (Exception e) {
-            System.exit (-1);
-        }
-    }
+
     public long self;
+
     /*
     Create a new UUID object.
     */
@@ -43,6 +37,7 @@ public class Zuuid implements AutoCloseable{
         __destroy (self);
         self = 0;
     }
+
     /*
     Set UUID to new supplied ZUUID_LEN-octet value.
     */

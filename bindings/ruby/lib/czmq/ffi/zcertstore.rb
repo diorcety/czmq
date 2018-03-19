@@ -92,15 +92,15 @@ module CZMQ
 
       # Create a new callback of the following type:
       # Destructor for loader state.
-      #     typedef void (zcertstore_destructor) (
-      #         void **self_p);
+      #     typedef void * (zcertstore_destructor) (
+      #         void *self_p);
       #
       # @note WARNING: If your Ruby code doesn't retain a reference to the
       #   FFI::Function object after passing it to a C function call,
       #   it may be garbage collected while C still holds the pointer,
       #   potentially resulting in a segmentation fault.
       def self.destructor
-        ::FFI::Function.new :void, [:pointer], blocking: true do |self_p|
+        ::FFI::Function.new :pointer, [:pointer], blocking: true do |self_p|
           result = yield self_p
           result
         end

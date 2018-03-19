@@ -7,15 +7,9 @@
 package org.zeromq.czmq;
 
 public class Zpoller implements AutoCloseable{
-    static {
-        try {
-            System.loadLibrary ("czmqjni");
-        }
-        catch (Exception e) {
-            System.exit (-1);
-        }
-    }
+
     public long self;
+
     /*
     Create new poller, specifying zero or more readers. The list of
     readers ends in a NULL. Each reader can be a zsock_t instance, a
@@ -38,6 +32,7 @@ public class Zpoller implements AutoCloseable{
         __destroy (self);
         self = 0;
     }
+
     /*
     Add a reader to be polled. Returns 0 if OK, -1 on failure. The reader may
     be a libzmq void * socket, a zsock_t instance, or a zactor_t instance.

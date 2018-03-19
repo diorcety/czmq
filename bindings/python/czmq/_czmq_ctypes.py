@@ -940,7 +940,7 @@ heap memory, returns NULL.
 
 # zcertstore
 zcertstore_loader = CFUNCTYPE(None, zcertstore_p)
-zcertstore_destructor = CFUNCTYPE(None, c_void_p)
+zcertstore_destructor = CFUNCTYPE(c_void_p, c_void_p)
 lib.zcertstore_new.restype = zcertstore_p
 lib.zcertstore_new.argtypes = [c_char_p]
 lib.zcertstore_destroy.restype = None
@@ -7052,6 +7052,8 @@ lib.zsys_udp_new.restype = socket_p
 lib.zsys_udp_new.argtypes = [c_bool]
 lib.zsys_udp_close.restype = c_int
 lib.zsys_udp_close.argtypes = [socket_p]
+lib.zsys_udp_send.restype = c_int
+lib.zsys_udp_send.argtypes = [socket_p, zframe_p, c_void_p, c_int]
 lib.zsys_udp_recv.restype = zframe_p
 lib.zsys_udp_recv.argtypes = [socket_p, c_char_p, c_int]
 lib.zsys_socket_error.restype = None
@@ -7384,6 +7386,15 @@ and related ones might _eventually_ be moved to a zudp class.
 *** This is for CZMQ internal use only and may change arbitrarily ***
         """
         return lib.zsys_udp_close(handle)
+
+    @staticmethod
+    def udp_send(udpsock, frame, address, addrlen):
+        """
+        Send zframe to UDP socket, return -1 if sending failed due to
+interface having disappeared (happens easily with WiFi)
+*** This is for CZMQ internal use only and may change arbitrarily ***
+        """
+        return lib.zsys_udp_send(udpsock, frame, address, addrlen)
 
     @staticmethod
     def udp_recv(udpsock, peername, peerlen):

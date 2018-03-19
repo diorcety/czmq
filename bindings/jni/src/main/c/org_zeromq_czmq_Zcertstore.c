@@ -27,6 +27,12 @@ Java_org_zeromq_czmq_Zcertstore__1_1destroy (JNIEnv *env, jclass c, jlong self)
     zcertstore_destroy ((zcertstore_t **) &self);
 }
 
+JNIEXPORT void JNICALL
+Java_org_zeromq_czmq_Zcertstore__1_1setLoader (JNIEnv *env, jclass c, jlong self, jlong loader, jlong destructor, jlong state)
+{
+    zcertstore_set_loader ((zcertstore_t *) (intptr_t) self, (zcertstore_loader *) (intptr_t) loader, (zcertstore_destructor *) (intptr_t) destructor, (void *) (intptr_t) state);
+}
+
 JNIEXPORT jlong JNICALL
 Java_org_zeromq_czmq_Zcertstore__1_1lookup (JNIEnv *env, jclass c, jlong self, jstring public_key)
 {

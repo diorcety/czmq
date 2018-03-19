@@ -4,6 +4,9 @@
 @::  Read the zproject/README.md for information about making permanent changes. ::
 @::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ECHO Generating native JNI headers...
+IF EXIST ..\..\..\src\native\include\org_zeromq_czmq_Zactor.h GOTO HAVE_Zactor
+"%JAVA_HOME%\bin\javah.exe" -d ..\..\..\src\native\include -classpath ..\..\..\src\main\java org.zeromq.czmq.Zactor
+:HAVE_Zactor
 IF EXIST ..\..\..\src\native\include\org_zeromq_czmq_Zarmour.h GOTO HAVE_Zarmour
 "%JAVA_HOME%\bin\javah.exe" -d ..\..\..\src\native\include -classpath ..\..\..\src\main\java org.zeromq.czmq.Zarmour
 :HAVE_Zarmour

@@ -254,7 +254,7 @@ JNIEXPORT jint JNICALL
 Java_org_zeromq_czmq_Zsock__1_1send (JNIEnv *env, jclass c, jlong self, jstring picture)
 {
     char *picture_ = (char *) (*env)->GetStringUTFChars (env, picture, NULL);
-    jint send_ = (jint) zsock_send ((zsock_t *) (intptr_t) self, picture_);
+    jint send_ = (jint) zsock_send ((zsock_t *) (intptr_t) self, picture_, NULL);
     (*env)->ReleaseStringUTFChars (env, picture, picture_);
     return send_;
 }
@@ -263,7 +263,7 @@ JNIEXPORT jint JNICALL
 Java_org_zeromq_czmq_Zsock__1_1recv (JNIEnv *env, jclass c, jlong self, jstring picture)
 {
     char *picture_ = (char *) (*env)->GetStringUTFChars (env, picture, NULL);
-    jint recv_ = (jint) zsock_recv ((zsock_t *) (intptr_t) self, picture_);
+    jint recv_ = (jint) zsock_recv ((zsock_t *) (intptr_t) self, picture_, NULL);
     (*env)->ReleaseStringUTFChars (env, picture, picture_);
     return recv_;
 }
@@ -272,7 +272,7 @@ JNIEXPORT jint JNICALL
 Java_org_zeromq_czmq_Zsock__1_1bsend (JNIEnv *env, jclass c, jlong self, jstring picture)
 {
     char *picture_ = (char *) (*env)->GetStringUTFChars (env, picture, NULL);
-    jint bsend_ = (jint) zsock_bsend ((zsock_t *) (intptr_t) self, picture_);
+    jint bsend_ = (jint) zsock_bsend ((zsock_t *) (intptr_t) self, picture_, NULL);
     (*env)->ReleaseStringUTFChars (env, picture, picture_);
     return bsend_;
 }
@@ -281,7 +281,7 @@ JNIEXPORT jint JNICALL
 Java_org_zeromq_czmq_Zsock__1_1brecv (JNIEnv *env, jclass c, jlong self, jstring picture)
 {
     char *picture_ = (char *) (*env)->GetStringUTFChars (env, picture, NULL);
-    jint brecv_ = (jint) zsock_brecv ((zsock_t *) (intptr_t) self, picture_);
+    jint brecv_ = (jint) zsock_brecv ((zsock_t *) (intptr_t) self, picture_, NULL);
     (*env)->ReleaseStringUTFChars (env, picture, picture_);
     return brecv_;
 }

@@ -7,15 +7,9 @@
 package org.zeromq.czmq;
 
 public class Zframe implements AutoCloseable{
-    static {
-        try {
-            System.loadLibrary ("czmqjni");
-        }
-        catch (Exception e) {
-            System.exit (-1);
-        }
-    }
+
     public long self;
+
     /*
     Create a new frame. If size is not null, allocates the frame data
     to the specified size. If additionally, data is not null, copies
@@ -61,6 +55,7 @@ public class Zframe implements AutoCloseable{
         __destroy (self);
         self = 0;
     }
+
     /*
     Send a frame to a socket, destroy frame after sending.
     Return -1 on error, 0 on success.
@@ -199,7 +194,7 @@ public class Zframe implements AutoCloseable{
     Probe the supplied object, and report if it looks like a zframe_t.
     */
     native static boolean __is (long self);
-    public boolean is (long self) {
+    public static boolean is (long self) {
         return __is (self);
     }
     /*

@@ -7,15 +7,9 @@
 package org.zeromq.czmq;
 
 public class Zcert implements AutoCloseable{
-    static {
-        try {
-            System.loadLibrary ("czmqjni");
-        }
-        catch (Exception e) {
-            System.exit (-1);
-        }
-    }
+
     public long self;
+
     /*
     Create and initialize a new certificate in memory
     */
@@ -57,6 +51,7 @@ public class Zcert implements AutoCloseable{
         __destroy (self);
         self = 0;
     }
+
     /*
     Return public part of key pair as 32-byte binary string
     */

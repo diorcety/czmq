@@ -7,15 +7,77 @@
 package org.zeromq.czmq;
 
 public class Zlist implements AutoCloseable{
-    static {
-        try {
-            System.loadLibrary ("czmqjni");
+    public interface ZlistCompareFn {
+        int  callback (long item1, long item2);
+    }
+
+    public static class _ZlistCompareFn implements AutoCloseable, com.kenai.jffi.Closure {
+        private final ZlistCompareFn inner;
+        private final com.kenai.jffi.Closure.Handle handle;
+
+        public _ZlistCompareFn (ZlistCompareFn inner) {
+            this.inner = inner;
+            this.handle = com.kenai.jffi.ClosureManager.getInstance().newClosure(this, com.kenai.jffi.Type.SINT, new com.kenai.jffi.Type[] {com.kenai.jffi.Type.SLONG, com.kenai.jffi.Type.SLONG}, com.kenai.jffi.CallingConvention.DEFAULT);
+            this.handle.setAutoRelease(false);
         }
-        catch (Exception e) {
-            System.exit (-1);
+
+        @Override
+        public void close () {
+            handle.dispose();
+        }
+
+        @Override
+        public void invoke(com.kenai.jffi.Closure.Buffer buffer) {
+            int ret;
+            ret =  inner.callback(buffer.getLong(0), buffer.getLong(1));
+            buffer.setIntReturn(ret);
+        }
+
+        public long getAddress () {
+            return handle.getAddress();
         }
     }
+
+    public static _ZlistCompareFn zlist_compare_fn(ZlistCompareFn inner) {
+        return inner != null ? new _ZlistCompareFn(inner) : null;
+    }
+
+    public interface ZlistFreeFn {
+        void  callback (long data);
+    }
+
+    public static class _ZlistFreeFn implements AutoCloseable, com.kenai.jffi.Closure {
+        private final ZlistFreeFn inner;
+        private final com.kenai.jffi.Closure.Handle handle;
+
+        public _ZlistFreeFn (ZlistFreeFn inner) {
+            this.inner = inner;
+            this.handle = com.kenai.jffi.ClosureManager.getInstance().newClosure(this, com.kenai.jffi.Type.VOID, new com.kenai.jffi.Type[] {com.kenai.jffi.Type.SLONG}, com.kenai.jffi.CallingConvention.DEFAULT);
+            this.handle.setAutoRelease(false);
+        }
+
+        @Override
+        public void close () {
+            handle.dispose();
+        }
+
+        @Override
+        public void invoke(com.kenai.jffi.Closure.Buffer buffer) {
+            inner.callback(buffer.getLong(0));
+        }
+
+        public long getAddress () {
+            return handle.getAddress();
+        }
+    }
+
+    public static _ZlistFreeFn zlist_free_fn(ZlistFreeFn inner) {
+        return inner != null ? new _ZlistFreeFn(inner) : null;
+    }
+
+
     public long self;
+
     /*
     Create a new list container
     */
@@ -36,6 +98,7 @@ public class Zlist implements AutoCloseable{
         __destroy (self);
         self = 0;
     }
+
     /*
     Return the item at the head of list. If the list is empty, returns NULL.
     Leaves cursor pointing at the head item, or NULL if the list is empty.
@@ -148,6 +211,17 @@ public class Zlist implements AutoCloseable{
         return __size (self);
     }
     /*
+    Sort the list. If the compare function is null, sorts the list by
+    ascending key value using a straight ASCII comparison. If you specify
+    a compare function, this decides how items are sorted. The sort is not
+    stable, so may reorder items with the same keys. The algorithm used is
+    combsort, a compromise between performance and simplicity.
+    */
+    native static void __sort (long self, long compare);
+    public void sort (_ZlistCompareFn compare) {
+        __sort (self, compare.getAddress());
+    }
+    /*
     Set list for automatic item destruction; item values MUST be strings.
     By default a list item refers to a value held elsewhere. When you set
     this, each time you append or push a list item, zlist will take a copy
@@ -160,6 +234,28 @@ public class Zlist implements AutoCloseable{
     native static void __autofree (long self);
     public void autofree () {
         __autofree (self);
+    }
+    /*
+    Sets a compare function for this list. The function compares two items.
+    It returns an integer less than, equal to, or greater than zero if the
+    first item is found, respectively, to be less than, to match, or be
+    greater than the second item.
+    This function is used for sorting, removal and exists checking.
+    */
+    native static void __comparefn (long self, long fn);
+    public void comparefn (_ZlistCompareFn fn) {
+        __comparefn (self, fn.getAddress());
+    }
+    /*
+    Set a free function for the specified list item. When the item is
+    destroyed, the free function, if any, is called on that item.
+    Use this when list items are dynamically allocated, to ensure that
+    you don't have memory leaks. You can pass 'free' or NULL as a free_fn.
+    Returns the item, or NULL if there is no such item.
+    */
+    native static long __freefn (long self, long item, long fn, boolean atTail);
+    public long freefn (long item, _ZlistFreeFn fn, boolean atTail) {
+        return __freefn (self, item, fn.getAddress(), atTail);
     }
     /*
     Self test of this class.

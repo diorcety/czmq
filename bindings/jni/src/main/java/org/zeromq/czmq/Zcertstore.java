@@ -7,15 +7,77 @@
 package org.zeromq.czmq;
 
 public class Zcertstore implements AutoCloseable{
-    static {
-        try {
-            System.loadLibrary ("czmqjni");
+    public interface ZcertstoreLoader {
+        void  callback (Zcertstore self);
+    }
+
+    public static class _ZcertstoreLoader implements AutoCloseable, com.kenai.jffi.Closure {
+        private final ZcertstoreLoader inner;
+        private final com.kenai.jffi.Closure.Handle handle;
+
+        public _ZcertstoreLoader (ZcertstoreLoader inner) {
+            this.inner = inner;
+            this.handle = com.kenai.jffi.ClosureManager.getInstance().newClosure(this, com.kenai.jffi.Type.VOID, new com.kenai.jffi.Type[] {com.kenai.jffi.Type.POINTER}, com.kenai.jffi.CallingConvention.DEFAULT);
+            this.handle.setAutoRelease(false);
         }
-        catch (Exception e) {
-            System.exit (-1);
+
+        @Override
+        public void close () {
+            handle.dispose();
+        }
+
+        @Override
+        public void invoke(com.kenai.jffi.Closure.Buffer buffer) {
+            inner.callback(new Zcertstore(buffer.getAddress(0)));
+        }
+
+        public long getAddress () {
+            return handle.getAddress();
         }
     }
+
+    public static _ZcertstoreLoader zcertstore_loader(ZcertstoreLoader inner) {
+        return inner != null ? new _ZcertstoreLoader(inner) : null;
+    }
+
+    public interface ZcertstoreDestructor {
+        long  callback (long selfP);
+    }
+
+    public static class _ZcertstoreDestructor implements AutoCloseable, com.kenai.jffi.Closure {
+        private final ZcertstoreDestructor inner;
+        private final com.kenai.jffi.Closure.Handle handle;
+
+        public _ZcertstoreDestructor (ZcertstoreDestructor inner) {
+            this.inner = inner;
+            this.handle = com.kenai.jffi.ClosureManager.getInstance().newClosure(this, com.kenai.jffi.Type.SLONG, new com.kenai.jffi.Type[] {com.kenai.jffi.Type.SLONG}, com.kenai.jffi.CallingConvention.DEFAULT);
+            this.handle.setAutoRelease(false);
+        }
+
+        @Override
+        public void close () {
+            handle.dispose();
+        }
+
+        @Override
+        public void invoke(com.kenai.jffi.Closure.Buffer buffer) {
+            long ret;
+            ret =  inner.callback(buffer.getLong(0));
+            buffer.setLongReturn(ret);
+        }
+
+        public long getAddress () {
+            return handle.getAddress();
+        }
+    }
+
+    public static _ZcertstoreDestructor zcertstore_destructor(ZcertstoreDestructor inner) {
+        return inner != null ? new _ZcertstoreDestructor(inner) : null;
+    }
+
+
     public long self;
+
     /*
     Create a new certificate store from a disk directory, loading and
     indexing all certificates in that location. The directory itself may be
@@ -41,6 +103,14 @@ public class Zcertstore implements AutoCloseable{
     public void close () {
         __destroy (self);
         self = 0;
+    }
+
+    /*
+    Override the default disk loader with a custom loader fn.
+    */
+    native static void __setLoader (long self, long loader, long destructor, long state);
+    public void setLoader (_ZcertstoreLoader loader, _ZcertstoreDestructor destructor, long state) {
+        __setLoader (self, loader.getAddress(), destructor.getAddress(), state);
     }
     /*
     Look up certificate by public key, returns zcert_t object if found,

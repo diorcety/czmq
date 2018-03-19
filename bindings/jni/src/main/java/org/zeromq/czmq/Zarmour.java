@@ -7,15 +7,9 @@
 package org.zeromq.czmq;
 
 public class Zarmour implements AutoCloseable{
-    static {
-        try {
-            System.loadLibrary ("czmqjni");
-        }
-        catch (Exception e) {
-            System.exit (-1);
-        }
-    }
+
     public long self;
+
     /*
     Create a new zarmour
     */
@@ -36,6 +30,7 @@ public class Zarmour implements AutoCloseable{
         __destroy (self);
         self = 0;
     }
+
     /*
     Encode a stream of bytes into an armoured string. Returns the armoured
     string, or NULL if there was insufficient memory available to allocate

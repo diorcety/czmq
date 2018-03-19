@@ -7,15 +7,9 @@
 package org.zeromq.czmq;
 
 public class Zfile implements AutoCloseable{
-    static {
-        try {
-            System.loadLibrary ("czmqjni");
-        }
-        catch (Exception e) {
-            System.exit (-1);
-        }
-    }
+
     public long self;
+
     /*
     If file exists, populates properties. CZMQ supports portable symbolic
     links, which are files with the extension ".ln". A symbolic link is a
@@ -48,6 +42,7 @@ public class Zfile implements AutoCloseable{
         __destroy (self);
         self = 0;
     }
+
     /*
     Duplicate a file item, returns a newly constructed item. If the file
     is null, or memory was exhausted, returns null.

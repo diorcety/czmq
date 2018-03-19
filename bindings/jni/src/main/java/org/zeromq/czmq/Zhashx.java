@@ -7,15 +7,253 @@
 package org.zeromq.czmq;
 
 public class Zhashx implements AutoCloseable{
-    static {
-        try {
-            System.loadLibrary ("czmqjni");
+    public interface ZhashxDestructorFn {
+        void  callback (long item);
+    }
+
+    public static class _ZhashxDestructorFn implements AutoCloseable, com.kenai.jffi.Closure {
+        private final ZhashxDestructorFn inner;
+        private final com.kenai.jffi.Closure.Handle handle;
+
+        public _ZhashxDestructorFn (ZhashxDestructorFn inner) {
+            this.inner = inner;
+            this.handle = com.kenai.jffi.ClosureManager.getInstance().newClosure(this, com.kenai.jffi.Type.VOID, new com.kenai.jffi.Type[] {com.kenai.jffi.Type.SLONG}, com.kenai.jffi.CallingConvention.DEFAULT);
+            this.handle.setAutoRelease(false);
         }
-        catch (Exception e) {
-            System.exit (-1);
+
+        @Override
+        public void close () {
+            handle.dispose();
+        }
+
+        @Override
+        public void invoke(com.kenai.jffi.Closure.Buffer buffer) {
+            inner.callback(buffer.getLong(0));
+        }
+
+        public long getAddress () {
+            return handle.getAddress();
         }
     }
+
+    public static _ZhashxDestructorFn zhashx_destructor_fn(ZhashxDestructorFn inner) {
+        return inner != null ? new _ZhashxDestructorFn(inner) : null;
+    }
+
+    public interface ZhashxDuplicatorFn {
+        long  callback (long item);
+    }
+
+    public static class _ZhashxDuplicatorFn implements AutoCloseable, com.kenai.jffi.Closure {
+        private final ZhashxDuplicatorFn inner;
+        private final com.kenai.jffi.Closure.Handle handle;
+
+        public _ZhashxDuplicatorFn (ZhashxDuplicatorFn inner) {
+            this.inner = inner;
+            this.handle = com.kenai.jffi.ClosureManager.getInstance().newClosure(this, com.kenai.jffi.Type.SLONG, new com.kenai.jffi.Type[] {com.kenai.jffi.Type.SLONG}, com.kenai.jffi.CallingConvention.DEFAULT);
+            this.handle.setAutoRelease(false);
+        }
+
+        @Override
+        public void close () {
+            handle.dispose();
+        }
+
+        @Override
+        public void invoke(com.kenai.jffi.Closure.Buffer buffer) {
+            long ret;
+            ret =  inner.callback(buffer.getLong(0));
+            buffer.setLongReturn(ret);
+        }
+
+        public long getAddress () {
+            return handle.getAddress();
+        }
+    }
+
+    public static _ZhashxDuplicatorFn zhashx_duplicator_fn(ZhashxDuplicatorFn inner) {
+        return inner != null ? new _ZhashxDuplicatorFn(inner) : null;
+    }
+
+    public interface ZhashxComparatorFn {
+        int  callback (long item1, long item2);
+    }
+
+    public static class _ZhashxComparatorFn implements AutoCloseable, com.kenai.jffi.Closure {
+        private final ZhashxComparatorFn inner;
+        private final com.kenai.jffi.Closure.Handle handle;
+
+        public _ZhashxComparatorFn (ZhashxComparatorFn inner) {
+            this.inner = inner;
+            this.handle = com.kenai.jffi.ClosureManager.getInstance().newClosure(this, com.kenai.jffi.Type.SINT, new com.kenai.jffi.Type[] {com.kenai.jffi.Type.SLONG, com.kenai.jffi.Type.SLONG}, com.kenai.jffi.CallingConvention.DEFAULT);
+            this.handle.setAutoRelease(false);
+        }
+
+        @Override
+        public void close () {
+            handle.dispose();
+        }
+
+        @Override
+        public void invoke(com.kenai.jffi.Closure.Buffer buffer) {
+            int ret;
+            ret =  inner.callback(buffer.getLong(0), buffer.getLong(1));
+            buffer.setIntReturn(ret);
+        }
+
+        public long getAddress () {
+            return handle.getAddress();
+        }
+    }
+
+    public static _ZhashxComparatorFn zhashx_comparator_fn(ZhashxComparatorFn inner) {
+        return inner != null ? new _ZhashxComparatorFn(inner) : null;
+    }
+
+    public interface ZhashxFreeFn {
+        void  callback (long data);
+    }
+
+    public static class _ZhashxFreeFn implements AutoCloseable, com.kenai.jffi.Closure {
+        private final ZhashxFreeFn inner;
+        private final com.kenai.jffi.Closure.Handle handle;
+
+        public _ZhashxFreeFn (ZhashxFreeFn inner) {
+            this.inner = inner;
+            this.handle = com.kenai.jffi.ClosureManager.getInstance().newClosure(this, com.kenai.jffi.Type.VOID, new com.kenai.jffi.Type[] {com.kenai.jffi.Type.SLONG}, com.kenai.jffi.CallingConvention.DEFAULT);
+            this.handle.setAutoRelease(false);
+        }
+
+        @Override
+        public void close () {
+            handle.dispose();
+        }
+
+        @Override
+        public void invoke(com.kenai.jffi.Closure.Buffer buffer) {
+            inner.callback(buffer.getLong(0));
+        }
+
+        public long getAddress () {
+            return handle.getAddress();
+        }
+    }
+
+    public static _ZhashxFreeFn zhashx_free_fn(ZhashxFreeFn inner) {
+        return inner != null ? new _ZhashxFreeFn(inner) : null;
+    }
+
+    public interface ZhashxHashFn {
+        long  callback (long key);
+    }
+
+    public static class _ZhashxHashFn implements AutoCloseable, com.kenai.jffi.Closure {
+        private final ZhashxHashFn inner;
+        private final com.kenai.jffi.Closure.Handle handle;
+
+        public _ZhashxHashFn (ZhashxHashFn inner) {
+            this.inner = inner;
+            this.handle = com.kenai.jffi.ClosureManager.getInstance().newClosure(this, com.kenai.jffi.Type.SLONG, new com.kenai.jffi.Type[] {com.kenai.jffi.Type.SLONG}, com.kenai.jffi.CallingConvention.DEFAULT);
+            this.handle.setAutoRelease(false);
+        }
+
+        @Override
+        public void close () {
+            handle.dispose();
+        }
+
+        @Override
+        public void invoke(com.kenai.jffi.Closure.Buffer buffer) {
+            long ret;
+            ret =  inner.callback(buffer.getLong(0));
+            buffer.setLongReturn(ret);
+        }
+
+        public long getAddress () {
+            return handle.getAddress();
+        }
+    }
+
+    public static _ZhashxHashFn zhashx_hash_fn(ZhashxHashFn inner) {
+        return inner != null ? new _ZhashxHashFn(inner) : null;
+    }
+
+    public interface ZhashxSerializerFn {
+        String  callback (long item);
+    }
+
+    public static class _ZhashxSerializerFn implements AutoCloseable, com.kenai.jffi.Closure {
+        private final ZhashxSerializerFn inner;
+        private final com.kenai.jffi.Closure.Handle handle;
+
+        public _ZhashxSerializerFn (ZhashxSerializerFn inner) {
+            this.inner = inner;
+            this.handle = com.kenai.jffi.ClosureManager.getInstance().newClosure(this, com.kenai.jffi.Type.POINTER, new com.kenai.jffi.Type[] {com.kenai.jffi.Type.SLONG}, com.kenai.jffi.CallingConvention.DEFAULT);
+            this.handle.setAutoRelease(false);
+        }
+
+        @Override
+        public void close () {
+            handle.dispose();
+        }
+
+        @Override
+        public void invoke(com.kenai.jffi.Closure.Buffer buffer) {
+            String ret;
+            ret =  inner.callback(buffer.getLong(0));
+            java.nio.ByteBuffer buf = java.nio.charset.Charset.defaultCharset().encode(ret);
+            long memory = com.kenai.jffi.MemoryIO.getInstance().allocateMemory(buf.remaining() + 1, false);
+            com.kenai.jffi.MemoryIO.getInstance().putZeroTerminatedByteArray(memory, buf.array(), buf.arrayOffset() + buf.position(), buf.remaining());
+            buffer.setAddressReturn(memory);
+        }
+
+        public long getAddress () {
+            return handle.getAddress();
+        }
+    }
+
+    public static _ZhashxSerializerFn zhashx_serializer_fn(ZhashxSerializerFn inner) {
+        return inner != null ? new _ZhashxSerializerFn(inner) : null;
+    }
+
+    public interface ZhashxDeserializerFn {
+        long  callback (String itemStr);
+    }
+
+    public static class _ZhashxDeserializerFn implements AutoCloseable, com.kenai.jffi.Closure {
+        private final ZhashxDeserializerFn inner;
+        private final com.kenai.jffi.Closure.Handle handle;
+
+        public _ZhashxDeserializerFn (ZhashxDeserializerFn inner) {
+            this.inner = inner;
+            this.handle = com.kenai.jffi.ClosureManager.getInstance().newClosure(this, com.kenai.jffi.Type.SLONG, new com.kenai.jffi.Type[] {com.kenai.jffi.Type.POINTER}, com.kenai.jffi.CallingConvention.DEFAULT);
+            this.handle.setAutoRelease(false);
+        }
+
+        @Override
+        public void close () {
+            handle.dispose();
+        }
+
+        @Override
+        public void invoke(com.kenai.jffi.Closure.Buffer buffer) {
+            long ret;
+            ret =  inner.callback(java.nio.charset.Charset.defaultCharset().decode(java.nio.ByteBuffer.wrap(com.kenai.jffi.MemoryIO.getInstance().getZeroTerminatedByteArray(buffer.getAddress(0)))).toString());
+            buffer.setLongReturn(ret);
+        }
+
+        public long getAddress () {
+            return handle.getAddress();
+        }
+    }
+
+    public static _ZhashxDeserializerFn zhashx_deserializer_fn(ZhashxDeserializerFn inner) {
+        return inner != null ? new _ZhashxDeserializerFn(inner) : null;
+    }
+
+
     public long self;
+
     /*
     Create a new, empty hash container
     */
@@ -37,6 +275,14 @@ public class Zhashx implements AutoCloseable{
         return new Zhashx (__unpack (frame.self));
     }
     /*
+    Same as unpack but uses a user-defined deserializer function to convert
+    a longstr back into item format.
+    */
+    native static long __unpackOwn (long frame, long deserializer);
+    public static Zhashx unpackOwn (Zframe frame, _ZhashxDeserializerFn deserializer) {
+        return new Zhashx (__unpackOwn (frame.self, deserializer.getAddress()));
+    }
+    /*
     Destroy a hash container and all items in it
     */
     native static void __destroy (long self);
@@ -45,6 +291,7 @@ public class Zhashx implements AutoCloseable{
         __destroy (self);
         self = 0;
     }
+
     /*
     Insert item into hash table with specified key and item.
     If key is already present returns -1 and leaves existing item unchanged
@@ -96,6 +343,17 @@ public class Zhashx implements AutoCloseable{
     native static int __rename (long self, long oldKey, long newKey);
     public int rename (long oldKey, long newKey) {
         return __rename (self, oldKey, newKey);
+    }
+    /*
+    Set a free function for the specified hash table item. When the item is
+    destroyed, the free function, if any, is called on that item.
+    Use this when hash items are dynamically allocated, to ensure that
+    you don't have memory leaks. You can pass 'free' or NULL as a free_fn.
+    Returns the item, or NULL if there is no such item.
+    */
+    native static long __freefn (long self, long key, long freeFn);
+    public long freefn (long key, _ZhashxFreeFn freeFn) {
+        return __freefn (self, key, freeFn.getAddress());
     }
     /*
     Return the number of keys/items in the hash table
@@ -218,6 +476,14 @@ public class Zhashx implements AutoCloseable{
         return new Zframe (__pack (self));
     }
     /*
+    Same as pack but uses a user-defined serializer function to convert items
+    into longstr.
+    */
+    native static long __packOwn (long self, long serializer);
+    public Zframe packOwn (_ZhashxSerializerFn serializer) {
+        return new Zframe (__packOwn (self, serializer.getAddress()));
+    }
+    /*
     Make a copy of the list; items are duplicated if you set a duplicator
     for the list, otherwise not. Copying a null reference returns a null
     reference. Note that this method's behavior changed slightly for CZMQ
@@ -227,6 +493,56 @@ public class Zhashx implements AutoCloseable{
     native static long __dup (long self);
     public Zhashx dup () {
         return new Zhashx (__dup (self));
+    }
+    /*
+    Set a user-defined deallocator for hash items; by default items are not
+    freed when the hash is destroyed.
+    */
+    native static void __setDestructor (long self, long destructor);
+    public void setDestructor (_ZhashxDestructorFn destructor) {
+        __setDestructor (self, destructor.getAddress());
+    }
+    /*
+    Set a user-defined duplicator for hash items; by default items are not
+    copied when the hash is duplicated.
+    */
+    native static void __setDuplicator (long self, long duplicator);
+    public void setDuplicator (_ZhashxDuplicatorFn duplicator) {
+        __setDuplicator (self, duplicator.getAddress());
+    }
+    /*
+    Set a user-defined deallocator for keys; by default keys are freed
+    when the hash is destroyed using free().
+    */
+    native static void __setKeyDestructor (long self, long destructor);
+    public void setKeyDestructor (_ZhashxDestructorFn destructor) {
+        __setKeyDestructor (self, destructor.getAddress());
+    }
+    /*
+    Set a user-defined duplicator for keys; by default keys are duplicated
+    using strdup.
+    */
+    native static void __setKeyDuplicator (long self, long duplicator);
+    public void setKeyDuplicator (_ZhashxDuplicatorFn duplicator) {
+        __setKeyDuplicator (self, duplicator.getAddress());
+    }
+    /*
+    Set a user-defined comparator for keys; by default keys are
+    compared using strcmp.
+    The callback function should return zero (0) on matching
+    items.
+    */
+    native static void __setKeyComparator (long self, long comparator);
+    public void setKeyComparator (_ZhashxComparatorFn comparator) {
+        __setKeyComparator (self, comparator.getAddress());
+    }
+    /*
+    Set a user-defined hash function for keys; by default keys are
+    hashed by a modified Bernstein hashing function.
+    */
+    native static void __setKeyHasher (long self, long hasher);
+    public void setKeyHasher (_ZhashxHashFn hasher) {
+        __setKeyHasher (self, hasher.getAddress());
     }
     /*
     Make copy of hash table; if supplied table is null, returns null.

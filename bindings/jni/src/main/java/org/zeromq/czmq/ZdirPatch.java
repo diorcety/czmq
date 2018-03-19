@@ -7,15 +7,9 @@
 package org.zeromq.czmq;
 
 public class ZdirPatch implements AutoCloseable{
-    static {
-        try {
-            System.loadLibrary ("czmqjni");
-        }
-        catch (Exception e) {
-            System.exit (-1);
-        }
-    }
+
     public long self;
+
     /*
     Create new patch
     */
@@ -36,6 +30,7 @@ public class ZdirPatch implements AutoCloseable{
         __destroy (self);
         self = 0;
     }
+
     /*
     Create copy of a patch. If the patch is null, or memory was exhausted,
     returns null.

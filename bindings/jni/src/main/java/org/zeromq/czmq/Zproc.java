@@ -7,15 +7,9 @@
 package org.zeromq.czmq;
 
 public class Zproc implements AutoCloseable{
-    static {
-        try {
-            System.loadLibrary ("czmqjni");
-        }
-        catch (Exception e) {
-            System.exit (-1);
-        }
-    }
+
     public long self;
+
     /*
     Create a new zproc.
     NOTE: On Windows and with libzmq3 and libzmq2 this function
@@ -38,6 +32,7 @@ public class Zproc implements AutoCloseable{
         __destroy (self);
         self = 0;
     }
+
     /*
     Return command line arguments (the first item is the executable) or
     NULL if not set.

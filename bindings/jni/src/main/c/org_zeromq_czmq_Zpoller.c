@@ -15,7 +15,7 @@ Java_org_zeromq_czmq_Zpoller__1_1new (JNIEnv *env, jclass c, jlong reader)
 {
     //  Disable CZMQ signal handling; allow Java to deal with it
     zsys_handler_set (NULL);
-    jlong new_ = (jlong) (intptr_t) zpoller_new ((void *) (intptr_t) reader);
+    jlong new_ = (jlong) (intptr_t) zpoller_new ((void *) (intptr_t) reader, NULL);
     return new_;
 }
 

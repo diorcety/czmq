@@ -78,6 +78,15 @@ Java_org_zeromq_czmq_Zhash__1_1rename (JNIEnv *env, jclass c, jlong self, jstrin
 }
 
 JNIEXPORT jlong JNICALL
+Java_org_zeromq_czmq_Zhash__1_1freefn (JNIEnv *env, jclass c, jlong self, jstring key, jlong free_fn)
+{
+    char *key_ = (char *) (*env)->GetStringUTFChars (env, key, NULL);
+    jlong freefn_ = (jlong) (intptr_t) zhash_freefn ((zhash_t *) (intptr_t) self, key_, (zhash_free_fn *) (intptr_t) free_fn);
+    (*env)->ReleaseStringUTFChars (env, key, key_);
+    return freefn_;
+}
+
+JNIEXPORT jlong JNICALL
 Java_org_zeromq_czmq_Zhash__1_1size (JNIEnv *env, jclass c, jlong self)
 {
     jlong size_ = (jlong) zhash_size ((zhash_t *) (intptr_t) self);

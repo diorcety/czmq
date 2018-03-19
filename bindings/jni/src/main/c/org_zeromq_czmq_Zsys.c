@@ -57,6 +57,12 @@ Java_org_zeromq_czmq_Zsys__1_1createPipe (JNIEnv *env, jclass c, jlong backend_p
 }
 
 JNIEXPORT void JNICALL
+Java_org_zeromq_czmq_Zsys__1_1handlerSet (JNIEnv *env, jclass c, jlong handler_fn)
+{
+    zsys_handler_set ((zsys_handler_fn *) (intptr_t) &handler_fn);
+}
+
+JNIEXPORT void JNICALL
 Java_org_zeromq_czmq_Zsys__1_1handlerReset (JNIEnv *env, jclass c)
 {
     zsys_handler_reset ();
@@ -130,7 +136,7 @@ JNIEXPORT jint JNICALL
 Java_org_zeromq_czmq_Zsys__1_1dirCreate (JNIEnv *env, jclass c, jstring pathname)
 {
     char *pathname_ = (char *) (*env)->GetStringUTFChars (env, pathname, NULL);
-    jint dir_create_ = (jint) zsys_dir_create (pathname_);
+    jint dir_create_ = (jint) zsys_dir_create (pathname_, NULL);
     (*env)->ReleaseStringUTFChars (env, pathname, pathname_);
     return dir_create_;
 }
@@ -139,7 +145,7 @@ JNIEXPORT jint JNICALL
 Java_org_zeromq_czmq_Zsys__1_1dirDelete (JNIEnv *env, jclass c, jstring pathname)
 {
     char *pathname_ = (char *) (*env)->GetStringUTFChars (env, pathname, NULL);
-    jint dir_delete_ = (jint) zsys_dir_delete (pathname_);
+    jint dir_delete_ = (jint) zsys_dir_delete (pathname_, NULL);
     (*env)->ReleaseStringUTFChars (env, pathname, pathname_);
     return dir_delete_;
 }

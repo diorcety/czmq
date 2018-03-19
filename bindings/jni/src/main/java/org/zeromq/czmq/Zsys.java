@@ -7,15 +7,42 @@
 package org.zeromq.czmq;
 
 public class Zsys {
-    static {
-        try {
-            System.loadLibrary ("czmqjni");
+    public interface ZsysHandlerFn {
+        void  callback (int signalValue);
+    }
+
+    public static class _ZsysHandlerFn implements AutoCloseable, com.kenai.jffi.Closure {
+        private final ZsysHandlerFn inner;
+        private final com.kenai.jffi.Closure.Handle handle;
+
+        public _ZsysHandlerFn (ZsysHandlerFn inner) {
+            this.inner = inner;
+            this.handle = com.kenai.jffi.ClosureManager.getInstance().newClosure(this, com.kenai.jffi.Type.VOID, new com.kenai.jffi.Type[] {com.kenai.jffi.Type.SINT}, com.kenai.jffi.CallingConvention.DEFAULT);
+            this.handle.setAutoRelease(false);
         }
-        catch (Exception e) {
-            System.exit (-1);
+
+        @Override
+        public void close () {
+            handle.dispose();
+        }
+
+        @Override
+        public void invoke(com.kenai.jffi.Closure.Buffer buffer) {
+            inner.callback(buffer.getInt(0));
+        }
+
+        public long getAddress () {
+            return handle.getAddress();
         }
     }
+
+    public static _ZsysHandlerFn zsys_handler_fn(ZsysHandlerFn inner) {
+        return inner != null ? new _ZsysHandlerFn(inner) : null;
+    }
+
+
     public long self;
+
     /*
     Initialize CZMQ zsys layer; this happens automatically when you create
     a socket or an actor; however this call lets you force initialization
@@ -24,7 +51,7 @@ public class Zsys {
     times. Returns global CZMQ context.
     */
     native static long __init ();
-    public long init () {
+    public static long init () {
         return __init ();
     }
     /*
@@ -34,7 +61,7 @@ public class Zsys {
     with Windows dlls.
     */
     native static void __shutdown ();
-    public void shutdown () {
+    public static void shutdown () {
         __shutdown ();
     }
     /*
@@ -45,7 +72,7 @@ public class Zsys {
     *** This is for CZMQ internal use only and may change arbitrarily ***
     */
     native static long __socket (int type, String filename, long lineNbr);
-    public long socket (int type, String filename, long lineNbr) {
+    public static long socket (int type, String filename, long lineNbr) {
         return __socket (type, filename, lineNbr);
     }
     /*
@@ -54,7 +81,7 @@ public class Zsys {
     *** This is for CZMQ internal use only and may change arbitrarily ***
     */
     native static int __close (long handle, String filename, long lineNbr);
-    public int Close (long handle, String filename, long lineNbr) {
+    public static int Close (long handle, String filename, long lineNbr) {
         return __close (handle, filename, lineNbr);
     }
     /*
@@ -62,7 +89,7 @@ public class Zsys {
     *** This is for CZMQ internal use only and may change arbitrarily ***
     */
     native static String __sockname (int socktype);
-    public String sockname (int socktype) {
+    public static String sockname (int socktype) {
         return __sockname (socktype);
     }
     /*
@@ -71,14 +98,24 @@ public class Zsys {
     frontend socket successful, NULL if failed.
     */
     native static long __createPipe (long backendP);
-    public Zsock createPipe (Zsock backendP) {
+    public static Zsock createPipe (Zsock backendP) {
         return new Zsock (__createPipe (backendP.self));
+    }
+    /*
+    Set interrupt handler; this saves the default handlers so that a
+    zsys_handler_reset () can restore them. If you call this multiple times
+    then the last handler will take affect. If handler_fn is NULL, disables
+    default SIGINT/SIGTERM handling in CZMQ.
+    */
+    native static void __handlerSet (long handlerFn);
+    public static void handlerSet (_ZsysHandlerFn handlerFn) {
+        __handlerSet (handlerFn.getAddress());
     }
     /*
     Reset interrupt handler, call this at exit if needed
     */
     native static void __handlerReset ();
-    public void handlerReset () {
+    public static void handlerReset () {
         __handlerReset ();
     }
     /*
@@ -88,7 +125,7 @@ public class Zsys {
     *** This is for CZMQ internal use only and may change arbitrarily ***
     */
     native static void __catchInterrupts ();
-    public void catchInterrupts () {
+    public static void catchInterrupts () {
         __catchInterrupts ();
     }
     /*
@@ -97,7 +134,7 @@ public class Zsys {
     set interrupted on signal.
     */
     native static boolean __isInterrupted ();
-    public boolean isInterrupted () {
+    public static boolean isInterrupted () {
         return __isInterrupted ();
     }
     /*
@@ -106,21 +143,21 @@ public class Zsys {
     signal handler.
     */
     native static void __setInterrupted ();
-    public void setInterrupted () {
+    public static void setInterrupted () {
         __setInterrupted ();
     }
     /*
     Return 1 if file exists, else zero
     */
     native static boolean __fileExists (String filename);
-    public boolean fileExists (String filename) {
+    public static boolean fileExists (String filename) {
         return __fileExists (filename);
     }
     /*
     Return file modification time. Returns 0 if the file does not exist.
     */
     native static long __fileModified (String filename);
-    public long fileModified (String filename) {
+    public static long fileModified (String filename) {
         return __fileModified (filename);
     }
     /*
@@ -129,21 +166,21 @@ public class Zsys {
     Returns a mode_t cast to int, or -1 in case of error.
     */
     native static int __fileMode (String filename);
-    public int fileMode (String filename) {
+    public static int fileMode (String filename) {
         return __fileMode (filename);
     }
     /*
     Delete file. Does not complain if the file is absent
     */
     native static int __fileDelete (String filename);
-    public int fileDelete (String filename) {
+    public static int fileDelete (String filename) {
         return __fileDelete (filename);
     }
     /*
     Check if file is 'stable'
     */
     native static boolean __fileStable (String filename);
-    public boolean fileStable (String filename) {
+    public static boolean fileStable (String filename) {
         return __fileStable (filename);
     }
     /*
@@ -151,21 +188,21 @@ public class Zsys {
     printf format.
     */
     native static int __dirCreate (String pathname);
-    public int dirCreate (String pathname []) {
+    public static int dirCreate (String pathname []) {
         return __dirCreate (pathname [0]);
     }
     /*
     Remove a file path if empty; the pathname is treated as printf format.
     */
     native static int __dirDelete (String pathname);
-    public int dirDelete (String pathname []) {
+    public static int dirDelete (String pathname []) {
         return __dirDelete (pathname [0]);
     }
     /*
     Move to a specified working directory. Returns 0 if OK, -1 if this failed.
     */
     native static int __dirChange (String pathname);
-    public int dirChange (String pathname) {
+    public static int dirChange (String pathname) {
         return __dirChange (pathname);
     }
     /*
@@ -173,7 +210,7 @@ public class Zsys {
     readable/writable by the owner only.
     */
     native static void __fileModePrivate ();
-    public void fileModePrivate () {
+    public static void fileModePrivate () {
         __fileModePrivate ();
     }
     /*
@@ -181,7 +218,7 @@ public class Zsys {
     process file mode defaults.
     */
     native static void __fileModeDefault ();
-    public void fileModeDefault () {
+    public static void fileModeDefault () {
         __fileModeDefault ();
     }
     /*
@@ -189,7 +226,7 @@ public class Zsys {
     number into provided fields, providing reference isn't null in each case.
     */
     native static void __version (int major, int minor, int patch);
-    public void version (int major, int minor, int patch) {
+    public static void version (int major, int minor, int patch) {
         __version (major, minor, patch);
     }
     /*
@@ -198,7 +235,7 @@ public class Zsys {
     string using zstr_free().
     */
     native static String __sprintf (String format);
-    public String sprintf (String format) {
+    public static String sprintf (String format) {
         return __sprintf (format);
     }
     /*
@@ -207,7 +244,7 @@ public class Zsys {
     *** This is for CZMQ internal use only and may change arbitrarily ***
     */
     native static void __socketError (String reason);
-    public void socketError (String reason) {
+    public static void socketError (String reason) {
         __socketError (reason);
     }
     /*
@@ -216,7 +253,7 @@ public class Zsys {
     name is not resolvable, returns NULL.
     */
     native static String __hostname ();
-    public String hostname () {
+    public static String hostname () {
         return __hostname ();
     }
     /*
@@ -227,7 +264,7 @@ public class Zsys {
     Windows, does nothing. Returns 0 if OK, -1 if there was an error.
     */
     native static int __daemonize (String workdir);
-    public int daemonize (String workdir) {
+    public static int daemonize (String workdir) {
         return __daemonize (workdir);
     }
     /*
@@ -238,7 +275,7 @@ public class Zsys {
     that method, or the lockfile will hold the wrong process ID.
     */
     native static int __runAs (String lockfile, String group, String user);
-    public int runAs (String lockfile, String group, String user) {
+    public static int runAs (String lockfile, String group, String user) {
         return __runAs (lockfile, group, user);
     }
     /*
@@ -246,7 +283,7 @@ public class Zsys {
     Uses a heuristic probe according to the version of libzmq being used.
     */
     native static boolean __hasCurve ();
-    public boolean hasCurve () {
+    public static boolean hasCurve () {
         return __hasCurve ();
     }
     /*
@@ -257,7 +294,7 @@ public class Zsys {
     Note that this method is valid only before any socket is created.
     */
     native static void __setIoThreads (long ioThreads);
-    public void setIoThreads (long ioThreads) {
+    public static void setIoThreads (long ioThreads) {
         __setIoThreads (ioThreads);
     }
     /*
@@ -268,7 +305,7 @@ public class Zsys {
     Note that this method is valid only before any socket is created.
     */
     native static void __setThreadSchedPolicy (int policy);
-    public void setThreadSchedPolicy (int policy) {
+    public static void setThreadSchedPolicy (int policy) {
         __setThreadSchedPolicy (policy);
     }
     /*
@@ -279,7 +316,7 @@ public class Zsys {
     Note that this method is valid only before any socket is created.
     */
     native static void __setThreadPriority (int priority);
-    public void setThreadPriority (int priority) {
+    public static void setThreadPriority (int priority) {
         __setThreadPriority (priority);
     }
     /*
@@ -289,14 +326,14 @@ public class Zsys {
     Note that this method is valid only before any socket is created.
     */
     native static void __setMaxSockets (long maxSockets);
-    public void setMaxSockets (long maxSockets) {
+    public static void setMaxSockets (long maxSockets) {
         __setMaxSockets (maxSockets);
     }
     /*
     Return maximum number of ZeroMQ sockets that the system will support.
     */
     native static long __socketLimit ();
-    public long socketLimit () {
+    public static long socketLimit () {
         return __socketLimit ();
     }
     /*
@@ -304,14 +341,14 @@ public class Zsys {
     The default is INT_MAX.
     */
     native static void __setMaxMsgsz (int maxMsgsz);
-    public void setMaxMsgsz (int maxMsgsz) {
+    public static void setMaxMsgsz (int maxMsgsz) {
         __setMaxMsgsz (maxMsgsz);
     }
     /*
     Return maximum message size.
     */
     native static int __maxMsgsz ();
-    public int maxMsgsz () {
+    public static int maxMsgsz () {
         return __maxMsgsz ();
     }
     /*
@@ -320,14 +357,14 @@ public class Zsys {
     Otherwise the default is 1.
     */
     native static void __setZeroCopyRecv (int zeroCopy);
-    public void setZeroCopyRecv (int zeroCopy) {
+    public static void setZeroCopyRecv (int zeroCopy) {
         __setZeroCopyRecv (zeroCopy);
     }
     /*
     Return ZMQ_ZERO_COPY_RECV option.
     */
     native static int __zeroCopyRecv ();
-    public int zeroCopyRecv () {
+    public static int zeroCopyRecv () {
         return __zeroCopyRecv ();
     }
     /*
@@ -338,7 +375,7 @@ public class Zsys {
     which generally depends on host OS, with fallback value of 5000.
     */
     native static void __setFileStableAgeMsec (long fileStableAgeMsec);
-    public void setFileStableAgeMsec (long fileStableAgeMsec) {
+    public static void setFileStableAgeMsec (long fileStableAgeMsec) {
         __setFileStableAgeMsec (fileStableAgeMsec);
     }
     /*
@@ -347,7 +384,7 @@ public class Zsys {
     before testing if a filesystem object is "stable" or not.
     */
     native static long __fileStableAgeMsec ();
-    public long fileStableAgeMsec () {
+    public static long fileStableAgeMsec () {
         return __fileStableAgeMsec ();
     }
     /*
@@ -358,7 +395,7 @@ public class Zsys {
     Note that process exit will typically be delayed by the linger time.
     */
     native static void __setLinger (long linger);
-    public void setLinger (long linger) {
+    public static void setLinger (long linger) {
         __setLinger (linger);
     }
     /*
@@ -369,7 +406,7 @@ public class Zsys {
     zero means no limit, i.e. infinite memory consumption.
     */
     native static void __setSndhwm (long sndhwm);
-    public void setSndhwm (long sndhwm) {
+    public static void setSndhwm (long sndhwm) {
         __setSndhwm (sndhwm);
     }
     /*
@@ -380,7 +417,7 @@ public class Zsys {
     zero means no limit, i.e. infinite memory consumption.
     */
     native static void __setRcvhwm (long rcvhwm);
-    public void setRcvhwm (long rcvhwm) {
+    public static void setRcvhwm (long rcvhwm) {
         __setRcvhwm (rcvhwm);
     }
     /*
@@ -391,14 +428,14 @@ public class Zsys {
     limit, i.e. infinite memory consumption.
     */
     native static void __setPipehwm (long pipehwm);
-    public void setPipehwm (long pipehwm) {
+    public static void setPipehwm (long pipehwm) {
         __setPipehwm (pipehwm);
     }
     /*
     Return the HWM for zactor internal pipes.
     */
     native static long __pipehwm ();
-    public long pipehwm () {
+    public static long pipehwm () {
         return __pipehwm ();
     }
     /*
@@ -410,14 +447,14 @@ public class Zsys {
     default. Note: has no effect on ZMQ v2.
     */
     native static void __setIpv6 (int ipv6);
-    public void setIpv6 (int ipv6) {
+    public static void setIpv6 (int ipv6) {
         __setIpv6 (ipv6);
     }
     /*
     Return use of IPv6 for zsock instances.
     */
     native static int __ipv6 ();
-    public int ipv6 () {
+    public static int ipv6 () {
         return __ipv6 ();
     }
     /*
@@ -429,14 +466,14 @@ public class Zsys {
     Setting the interface to "*" means "use all available interfaces".
     */
     native static void __setInterface (String value);
-    public void setInterface (String value) {
+    public static void setInterface (String value) {
         __setInterface (value);
     }
     /*
     Return network interface to use for broadcasts, or "" if none was set.
     */
     native static String __interface ();
-    public String Interface () {
+    public static String Interface () {
         return __interface ();
     }
     /*
@@ -446,14 +483,14 @@ public class Zsys {
     use that as the default IPv6 address.
     */
     native static void __setIpv6Address (String value);
-    public void setIpv6Address (String value) {
+    public static void setIpv6Address (String value) {
         __setIpv6Address (value);
     }
     /*
     Return IPv6 address to use for zbeacon reception, or "" if none was set.
     */
     native static String __ipv6Address ();
-    public String ipv6Address () {
+    public static String ipv6Address () {
         return __ipv6Address ();
     }
     /*
@@ -463,7 +500,7 @@ public class Zsys {
     address.
     */
     native static void __setIpv6McastAddress (String value);
-    public void setIpv6McastAddress (String value) {
+    public static void setIpv6McastAddress (String value) {
         __setIpv6McastAddress (value);
     }
     /*
@@ -471,7 +508,7 @@ public class Zsys {
     set.
     */
     native static String __ipv6McastAddress ();
-    public String ipv6McastAddress () {
+    public static String ipv6McastAddress () {
         return __ipv6McastAddress ();
     }
     /*
@@ -483,14 +520,14 @@ public class Zsys {
     instead of creating a new socket.
     */
     native static void __setAutoUseFd (int autoUseFd);
-    public void setAutoUseFd (int autoUseFd) {
+    public static void setAutoUseFd (int autoUseFd) {
         __setAutoUseFd (autoUseFd);
     }
     /*
     Return use of automatic pre-allocated FDs for zsock instances.
     */
     native static int __autoUseFd ();
-    public int autoUseFd () {
+    public static int autoUseFd () {
         return __autoUseFd ();
     }
     /*
@@ -499,7 +536,7 @@ public class Zsys {
     ZSYS_LOGIDENT, if that is set.
     */
     native static void __setLogident (String value);
-    public void setLogident (String value) {
+    public static void setLogident (String value) {
         __setLogident (value);
     }
     /*
@@ -512,7 +549,7 @@ public class Zsys {
     this method with a null argument.
     */
     native static void __setLogsender (String endpoint);
-    public void setLogsender (String endpoint) {
+    public static void setLogsender (String endpoint) {
         __setLogsender (endpoint);
     }
     /*
@@ -520,42 +557,42 @@ public class Zsys {
     event log on Windows). By default this is disabled.
     */
     native static void __setLogsystem (boolean logsystem);
-    public void setLogsystem (boolean logsystem) {
+    public static void setLogsystem (boolean logsystem) {
         __setLogsystem (logsystem);
     }
     /*
     Log error condition - highest priority
     */
     native static void __error (String format);
-    public void error (String format) {
+    public static void error (String format) {
         __error (format);
     }
     /*
     Log warning condition - high priority
     */
     native static void __warning (String format);
-    public void warning (String format) {
+    public static void warning (String format) {
         __warning (format);
     }
     /*
     Log normal, but significant, condition - normal priority
     */
     native static void __notice (String format);
-    public void notice (String format) {
+    public static void notice (String format) {
         __notice (format);
     }
     /*
     Log informational message - low priority
     */
     native static void __info (String format);
-    public void info (String format) {
+    public static void info (String format) {
         __info (format);
     }
     /*
     Log debug-level message - lowest priority
     */
     native static void __debug (String format);
-    public void debug (String format) {
+    public static void debug (String format) {
         __debug (format);
     }
     /*

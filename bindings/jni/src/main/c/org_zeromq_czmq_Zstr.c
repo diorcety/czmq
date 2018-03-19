@@ -68,7 +68,7 @@ JNIEXPORT jint JNICALL
 Java_org_zeromq_czmq_Zstr__1_1sendx (JNIEnv *env, jclass c, jlong dest, jstring string)
 {
     char *string_ = (char *) (*env)->GetStringUTFChars (env, string, NULL);
-    jint sendx_ = (jint) zstr_sendx ((void *) (intptr_t) dest, string_);
+    jint sendx_ = (jint) zstr_sendx ((void *) (intptr_t) dest, string_, NULL);
     (*env)->ReleaseStringUTFChars (env, string, string_);
     return sendx_;
 }

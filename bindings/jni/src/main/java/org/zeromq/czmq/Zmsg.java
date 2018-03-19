@@ -7,15 +7,9 @@
 package org.zeromq.czmq;
 
 public class Zmsg implements AutoCloseable{
-    static {
-        try {
-            System.loadLibrary ("czmqjni");
-        }
-        catch (Exception e) {
-            System.exit (-1);
-        }
-    }
+
     public long self;
+
     /*
     Create a new empty message object
     */
@@ -64,6 +58,7 @@ public class Zmsg implements AutoCloseable{
         __destroy (self);
         self = 0;
     }
+
     /*
     Send message to destination socket, and destroy the message after sending
     it successfully. If the message has no frames, sends nothing but destroys
@@ -295,7 +290,7 @@ public class Zmsg implements AutoCloseable{
     Probe the supplied object, and report if it looks like a zmsg_t.
     */
     native static boolean __is (long self);
-    public boolean is (long self) {
+    public static boolean is (long self) {
         return __is (self);
     }
     /*

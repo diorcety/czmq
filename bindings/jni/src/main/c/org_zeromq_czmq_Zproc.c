@@ -42,7 +42,7 @@ JNIEXPORT void JNICALL
 Java_org_zeromq_czmq_Zproc__1_1setArgsx (JNIEnv *env, jclass c, jlong self, jstring arguments)
 {
     char *arguments_ = (char *) (*env)->GetStringUTFChars (env, arguments, NULL);
-    zproc_set_argsx ((zproc_t *) (intptr_t) self, arguments_);
+    zproc_set_argsx ((zproc_t *) (intptr_t) self, arguments_, NULL);
     (*env)->ReleaseStringUTFChars (env, arguments, arguments_);
 }
 
