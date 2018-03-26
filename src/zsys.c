@@ -25,6 +25,7 @@
 // For getcwd() variants
 #if (defined (WIN32))
 # include <direct.h>
+# include <tlhelp32.h>
 #else
 # include <unistd.h>
 #endif
@@ -655,12 +656,56 @@ zsys_catch_interrupts (void)
         zsys_handler_set (s_signal_handler);
 }
 
+#if defined (__WINDOWS__)
+
+static void CALLBACK
+s_signal_APCProc(_In_ ULONG_PTR dwParam) {
+    // Do nothing
+}
+
+static void
+s_signal_threads () {
+    THREADENTRY32 te32;
+    HANDLE hThread;
+    HANDLE hThreadSnap = INVALID_HANDLE_VALUE;
+    DWORD dwOwnerPID = GetCurrentProcessId();
+
+    hThreadSnap = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
+    if (hThreadSnap == INVALID_HANDLE_VALUE) {
+        return;
+    }
+
+    te32.dwSize = sizeof(THREADENTRY32);
+
+    if (!Thread32First(hThreadSnap, &te32)) {
+        CloseHandle(hThreadSnap);
+        return;
+    }
+
+    do {
+        if (te32.th32OwnerProcessID == dwOwnerPID) {
+            hThread = OpenThread(THREAD_SET_CONTEXT, FALSE, te32.th32ThreadID);
+            if (hThread == NULL) {
+                continue;
+            }
+            QueueUserAPC(s_signal_APCProc, hThread, 0);
+            CloseHandle(hThread);
+        }
+    } while (Thread32Next(hThreadSnap, &te32));
+
+    CloseHandle(hThreadSnap);
+}
+#endif
+
 //  Default internal signal handler
 static void
 s_signal_handler (int signal_value)
 {
     zctx_interrupted = 1;
     zsys_interrupted = 1;
+#if defined (__WINDOWS__)
+    s_signal_threads();
+#endif
 }
 
 
