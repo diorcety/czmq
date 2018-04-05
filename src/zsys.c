@@ -56,6 +56,10 @@ s_handler_fn_shim (DWORD ctrltype)
         installed_handler_fn (ctrltype);
         return TRUE;
     }
+    if (ctrltype == CTRL_BREAK_EVENT && installed_handler_fn != NULL) {
+        installed_handler_fn (ctrltype);
+        return TRUE;
+    }
     if (ctrltype == CTRL_CLOSE_EVENT && installed_handler_fn != NULL) {
         installed_handler_fn (ctrltype);
         return TRUE;
