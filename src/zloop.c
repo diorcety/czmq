@@ -720,11 +720,13 @@ zloop_start (zloop_t *self)
                 break;
         }
         rc = zmq_poll (self->pollset, (int) self->poll_size, s_tickless (self));
-        if (rc == -1 || (zsys_interrupted && !self->nonstop)) {
-            if (self->verbose)
-                zsys_debug ("zloop: interrupted");
+        if (rc == -1 && zmq_errno() == EINTR) {
             rc = 0;
-            break;              //  Context has been shut down
+            if (zsys_interrupted && !self->nonstop) {
+                if (self->verbose)
+                    zsys_debug ("zloop: interrupted");
+                break;              //  Context has been shut down
+            }
         }
 
         //  Handle any timers that have now expired
