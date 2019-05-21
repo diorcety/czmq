@@ -535,12 +535,12 @@ typedef struct {
 #       define inline __inline
 #   endif
 #   if (!defined (__MINGW32__))
-#     define strtoull _strtoui64
-#     define atoll _atoi64
+#       define strtoull _strtoui64
+#       define atoll _atoi64
 #   endif
 #   define srandom srand
 #   define TIMEZONE _timezone
-#   if (!defined (__MINGW32__))
+#   if (defined(_MSC_VER) && _MSC_VER < 1900)
 #       define snprintf _snprintf
 #       define vsnprintf _vsnprintf
 #   endif
