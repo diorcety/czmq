@@ -18,6 +18,12 @@ find_package (JNI REQUIRED)
 include_directories (${JAVA_INCLUDE_PATH} ${JAVA_INCLUDE_PATH2} src/native/include)
 
 ########################################################################
+# JAVA dependency
+########################################################################
+find_package(Java COMPONENTS Development REQUIRED)
+include(UseJava)
+
+########################################################################
 # LIBZMQ dependency
 ########################################################################
 find_package(libzmq REQUIRED)
@@ -39,7 +45,49 @@ ELSE (CZMQ_FOUND)
     message( FATAL_ERROR "czmq not found." )
 ENDIF (CZMQ_FOUND)
 
+set(DEPENDENCY_CLASSPATH_FILE "dependencies.txt")
+file(READ ${DEPENDENCY_CLASSPATH_FILE} CLASSPATH)
+IF (UNIX)
+    string(REPLACE ":" ";" CLASSPATH ${CLASSPATH})
+ENDIF (UNIX)
+
+########################################################################
+# Generate headers
+########################################################################
+Create_javah(GENERATED_FILES files_headers
+    CLASSES
+    org.zeromq.czmq.Zactor
+    org.zeromq.czmq.Zarmour
+    org.zeromq.czmq.Zcert
+    org.zeromq.czmq.Zcertstore
+    org.zeromq.czmq.Zchunk
+    org.zeromq.czmq.Zclock
+    org.zeromq.czmq.Zconfig
+    org.zeromq.czmq.Zdigest
+    org.zeromq.czmq.Zdir
+    org.zeromq.czmq.ZdirPatch
+    org.zeromq.czmq.Zfile
+    org.zeromq.czmq.Zframe
+    org.zeromq.czmq.Zhash
+    org.zeromq.czmq.Zhashx
+    org.zeromq.czmq.Ziflist
+    org.zeromq.czmq.Zlist
+    org.zeromq.czmq.Zlistx
+    org.zeromq.czmq.Zloop
+    org.zeromq.czmq.Zmsg
+    org.zeromq.czmq.Zpoller
+    org.zeromq.czmq.Zproc
+    org.zeromq.czmq.Zsock
+    org.zeromq.czmq.Zstr
+    org.zeromq.czmq.Zsys
+    org.zeromq.czmq.Ztimerset
+    org.zeromq.czmq.Ztrie
+    org.zeromq.czmq.Zuuid
+    CLASSPATH ${CMAKE_CURRENT_SOURCE_DIR}/src/main/java;${CLASSPATH}
+)
+
 set (czmqjni_sources
+    ${files_headers}
     src/main/c/org_zeromq_czmq_Zactor.c
     src/main/c/org_zeromq_czmq_Zarmour.c
     src/main/c/org_zeromq_czmq_Zcert.c
@@ -68,6 +116,8 @@ set (czmqjni_sources
     src/main/c/org_zeromq_czmq_Ztrie.c
     src/main/c/org_zeromq_czmq_Zuuid.c
 )
+
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_library (czmqjni SHARED ${czmqjni_sources})
 add_definitions (-DCZMQ_BUILD_DRAFT_API)
