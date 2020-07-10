@@ -29,6 +29,7 @@
   <ImportGroup Label="PropertySheets">
     <Import Project="$(SolutionDir)czmq.import.props" />
     <Import Project="$(SolutionDir)libzmq.import.props" />
+    <Import Project="$(SolutionDir)rt.import.props" Condition="'$(HAVE_RT)'=='1'" />
     <Import Project="$(SolutionDir)uuid.import.props" Condition="'$(HAVE_UUID)'=='1'" />
     <Import Project="$(SolutionDir)systemd.import.props" Condition="'$(HAVE_SYSTEMD)'=='1'" />
     <Import Project="$(SolutionDir)lz4.import.props" Condition="'$(HAVE_LZ4)'=='1'" />
@@ -37,6 +38,7 @@
   <PropertyGroup Condition="$(Configuration.IndexOf('DEXE')) != -1">
     <Linkage-czmq>dynamic</Linkage-czmq>
     <Linkage-libzmq>dynamic</Linkage-libzmq>
+    <Linkage-rt Condition="'$(HAVE_RT)'=='1'">dynamic</Linkage-rt>
     <Linkage-uuid Condition="'$(HAVE_UUID)'=='1'">dynamic</Linkage-uuid>
     <Linkage-systemd Condition="'$(HAVE_SYSTEMD)'=='1'">dynamic</Linkage-systemd>
     <Linkage-lz4 Condition="'$(HAVE_LZ4)'=='1'">dynamic</Linkage-lz4>
@@ -45,6 +47,7 @@
   <PropertyGroup Condition="$(Configuration.IndexOf('LEXE')) != -1">
     <Linkage-czmq>ltcg</Linkage-czmq>
     <Linkage-libzmq>ltcg</Linkage-libzmq>
+    <Linkage-rt Condition="'$(HAVE_RT)'=='1'">ltcg</Linkage-rt>
     <Linkage-uuid Condition="'$(HAVE_UUID)'=='1'">ltcg</Linkage-uuid>
     <Linkage-systemd Condition="'$(HAVE_SYSTEMD)'=='1'">ltcg</Linkage-systemd>
     <Linkage-lz4 Condition="'$(HAVE_LZ4)'=='1'">ltcg</Linkage-lz4>
@@ -53,6 +56,7 @@
   <PropertyGroup Condition="$(Configuration.IndexOf('SEXE')) != -1">
     <Linkage-czmq>static</Linkage-czmq>
     <Linkage-libzmq>static</Linkage-libzmq>
+    <Linkage-rt Condition="'$(HAVE_RT)'=='1'">static</Linkage-rt>
     <Linkage-uuid Condition="'$(HAVE_UUID)'=='1'">static</Linkage-uuid>
     <Linkage-systemd Condition="'$(HAVE_SYSTEMD)'=='1'">static</Linkage-systemd>
     <Linkage-lz4 Condition="'$(HAVE_LZ4)'=='1'">static</Linkage-lz4>
@@ -62,6 +66,7 @@
   <Target Name="LinkageInfo" BeforeTargets="PrepareForBuild">
     <Message Text="Linkage-czmq: $(Linkage-czmq)" Importance="high"/>
     <Message Text="Linkage-libzmq: $(Linkage-libzmq)" Importance="high" />
+    <Message Text="Linkage-rt: $(Linkage-rt)" Importance="high" Condition="'$(HAVE_RT)'=='1'" />
     <Message Text="Linkage-uuid: $(Linkage-uuid)" Importance="high" Condition="'$(HAVE_UUID)'=='1'" />
     <Message Text="Linkage-systemd: $(Linkage-systemd)" Importance="high" Condition="'$(HAVE_SYSTEMD)'=='1'" />
     <Message Text="Linkage-lz4: $(Linkage-lz4)" Importance="high" Condition="'$(HAVE_LZ4)'=='1'" />

@@ -31,6 +31,14 @@ IF EXIST "..\..\..\..\libzmq\builds/msvc/vs2010\libzmq.import.props" (
     ECHO Please clone from https://github.com/zeromq/libzmq.git, and then build.
     GOTO error
 )
+IF EXIST "..\..\..\..\rt\builds/msvc/vs2010\rt.import.props" (
+    COPY /Y "..\..\..\..\rt\builds/msvc/vs2010\rt.import.props" . > %log%
+    IF errorlevel 1 GOTO error
+    SET packages=%packages% /p:HAVE_RT=1
+    ECHO Building with rt
+) ELSE (
+    ECHO Building without rt
+)
 IF EXIST "..\..\..\..\uuid\builds/msvc/vs2010\uuid.import.props" (
     COPY /Y "..\..\..\..\uuid\builds/msvc/vs2010\uuid.import.props" . > %log%
     IF errorlevel 1 GOTO error

@@ -131,6 +131,18 @@ ELSE (LIBZMQ_FOUND)
 ENDIF (LIBZMQ_FOUND)
 
 ########################################################################
+# RT dependency
+########################################################################
+find_package(rt)
+IF (RT_FOUND)
+    include_directories(${RT_INCLUDE_DIRS})
+    list(APPEND MORE_LIBRARIES ${RT_LIBRARIES})
+    set(pkg_config_libs_private "${pkg_config_libs_private} -lrt")
+    add_definitions(-DHAVE_RT)
+    list(APPEND OPTIONAL_LIBRARIES ${RT_LIBRARIES})
+ENDIF (RT_FOUND)
+
+########################################################################
 # UUID dependency
 ########################################################################
 find_package(uuid)

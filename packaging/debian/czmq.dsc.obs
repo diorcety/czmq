@@ -7,6 +7,7 @@ Architecture: any
 Build-Depends: debhelper (>= 9),
     pkg-config,
     libzmq3-dev,
+    librt-dev,
     uuid-dev,
     libsystemd-dev,
     liblz4-dev,

@@ -227,6 +227,68 @@ dnl END of PKG_CHECK_MODULES and/or direct tests for libzmq
 dnl END of enabled attempts to search for libzmq
 
 
+was_rt_check_lib_detected=no
+
+search_rt="no"
+
+AC_ARG_WITH([rt],
+    [
+        AS_HELP_STRING([--with-rt],
+        [yes or no. Optionally specify rt prefix (directory where its include/ and lib/ are located), but that is only used if pkgconfig metadata is not found first])
+    ],
+    [
+        search_rt="yes"
+    ],
+    [
+        search_rt="yes"
+    ])
+AS_CASE([x"${with_rt}"],
+    [xyes], [search_rt="yes"],
+    [xno],  [search_rt="no"])
+
+
+AS_IF([test x"${search_rt}" = xyes], [
+    # Archive previously detected and supplied flags
+    PRE_SEARCH_CFLAGS="${CFLAGS}"
+    PRE_SEARCH_LIBS="${LIBS}"
+
+    found_pkgconfig=""
+    found_linkname=""
+    PKG_CHECK_MODULES([rt], [rt >= 0.0.0],
+    [
+        AC_DEFINE(HAVE_RT, 1, [The optional rt library is to be used])
+        PKGCFG_LIBS_PRIVATE="$PKGCFG_LIBS_PRIVATE $rt_LIBS"
+        was_rt_check_lib_detected=pkgcfg
+        found_pkgconfig="rt"
+    ],
+    [
+        AC_MSG_WARN([Attribute 'test' is not set on zproject dependency 'rt' - please ensure it is set])
+    ])
+
+dnl END of PKG_CHECK_MODULES and/or direct tests for rt
+    AS_CASE(["x${was_rt_check_lib_detected}"],
+        [xpkgcfg], [
+                AC_SUBST([pkgconfig_name_rt],[${found_pkgconfig}])
+                CFLAGS="${rt_CFLAGS} ${CFLAGS}"
+                LIBS="${rt_LIBS} ${LIBS}"
+            ],
+        [xyes], [
+                AC_SUBST([pkgconfig_name_rt],[${found_linkname}])
+                CFLAGS="${rt_synthetic_cflags} ${CFLAGS}"
+                LDFLAGS="${rt_synthetic_libs} ${LDFLAGS}"
+                LIBS="${rt_synthetic_libs} ${LIBS}"
+
+                AC_SUBST([rt_CFLAGS],[${rt_synthetic_cflags}])
+                AC_SUBST([rt_LIBS],[${rt_synthetic_libs}])
+            ],
+        [xno], [
+                AC_SUBST([pkgconfig_name_rt],[rt])
+            AC_MSG_WARN([Cannot find pkg-config metadata for rt 0.0.0 or higher])
+    ])
+])
+dnl END of enabled attempts to search for rt
+
+
 was_uuid_check_lib_detected=no
 
 search_uuid="no"

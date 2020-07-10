@@ -52,6 +52,7 @@ BuildRequires:  libtool
 BuildRequires:  pkgconfig
 BuildRequires:  xmlto
 BuildRequires:  zeromq-devel
+BuildRequires:  rt-devel
 BuildRequires:  libuuid-devel
 BuildRequires:  systemd-devel
 BuildRequires:  liblz4-devel
@@ -89,6 +90,7 @@ Summary:        the high-level c binding for 0mq
 Group:          System/Libraries
 Requires:       libczmq4 = %{version}
 Requires:       zeromq-devel
+Requires:       rt-devel
 Requires:       libuuid-devel
 Requires:       systemd-devel
 Requires:       liblz4-devel
@@ -150,7 +152,7 @@ exit 1
 
 %build
 sh autogen.sh
-%{configure} --enable-drafts=%{DRAFTS} --with-uuid=yes --with-libsystemd=yes --with-liblz4=yes
+%{configure} --enable-drafts=%{DRAFTS} --with-rt=yes --with-uuid=yes --with-libsystemd=yes --with-liblz4=yes
 make %{_smp_mflags}
 %if %{with python_cffi}
 # Problem: we need pkg-config points to built and not yet installed copy of czmq

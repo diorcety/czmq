@@ -41,6 +41,13 @@ IF EXIST "..\..\..\libzmq" (
     ECHO TODO: resolve this problem automatically.
     GOTO error
 )
+IF EXIST "..\..\..\rt" (
+    ECHO Building with rt
+    ECHO #define HAVE_RT 1>> platform.h
+) ELSE (
+    ECHO Building without rt
+    ECHO #undef HAVE_RT>> platform.h
+)
 IF EXIST "..\..\..\uuid" (
     ECHO Building with uuid
     ECHO #define HAVE_UUID 1>> platform.h

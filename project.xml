@@ -11,6 +11,7 @@
     <version major = "4" minor = "1" patch = "1" />
     <abi current = "5" revision = "1" age = "1" />
     <use project = "libzmq" />
+    <use project = "rt" header = "time.h" optional = "1" implied = "1" />
     <use project = "uuid" optional = "1" implied = "1" />
     <use project = "systemd" optional = "1" implied = "1" min_major = "200" />
     <use project = "lz4" optional = "1" implied = "1" />

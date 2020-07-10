@@ -85,6 +85,7 @@ if not pkgconfig_installed ():
 
 kwargs = pkgconfig_kwargs ([
     "libzmq",
+    "rt",
     "uuid",
     "libsystemd",
     "liblz4",
